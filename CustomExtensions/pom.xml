@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	
+	<groupId>com.ca.devtest.sv</groupId>
+	<artifactId>CustomExtensions</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>CustomExtensions</name>
+	<description>Extensiones para CA DevTest</description>
+
+
+	<build>
+		<resources>
+			<resource>
+				<targetPath>co/com/extensions</targetPath>
+				<directory>src/main/java/co/com/extensions</directory>
+			</resource>
+		</resources>
+	</build>
+	<distributionManagement>
+		<repository>
+			<id>internal-releases</id>
+			<url>http://localhost:7080/nexus/content/repositories/internal-releases</url>
+		</repository>
+		<snapshotRepository>
+			<id>internal-snapshots</id>
+			<url>http://localhost:7080/nexus/content/repositories/internal-snapshots</url>
+		</snapshotRepository>
+	</distributionManagement>
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>3.8.1</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.12</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>r05</version>
+		</dependency>
+		<dependency>
+			<groupId>com.ca.devtest.test</groupId>
+			<artifactId>CustomFilter</artifactId>
+			<version>7.5.0.2</version>
+		</dependency>
+		<dependency>
+			<groupId>com.ca.devtest.test</groupId>
+			<artifactId>ResponseHandler</artifactId>
+			<version>7.5.0.2</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>com.ca.devtest</groupId>
+			<artifactId>lisa-util</artifactId>
+			<version>8.0</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>com.ca.devtest</groupId>
+			<artifactId>lisa-virtualize</artifactId>
+			<version>8.0</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>com.ca.devtest</groupId>
+			<artifactId>lisa-core</artifactId>
+			<version>8.0</version>
+		</dependency>
+
+	</dependencies>
+</project>

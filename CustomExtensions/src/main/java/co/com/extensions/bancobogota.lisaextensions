@@ -1,0 +1,22 @@
+# lisaextensions file
+
+#################
+#  Delimiters   #
+#################
+tcpProtocolDelimiters=co.com.bancobogota.delimiter.MultipayBSVDelimiter,com.bancobogota.delimiter.AutraTCPDelimiter,co.com.bancobogota.delimiter.CoordinadorTCPDelimiter,co.com.bancobogota.delimiter.DebuggerTCPDelimiter,co.com.bancobogota.delimiter.BanescoTCPDelimiter,co.com.bancobogota.delimiter.TwoByteISO8583TCPDelimiter,co.com.bancobogota.delimiter.HexaCharacterFromFileDelimiter
+co.com.bancobogota.delimiter.HexaCharacterFromFileDelimiter= FF Hexa Delimitador, true, true, false
+co.com.bancobogota.delimiter.MultipayBSVDelimiter=Multipay BSV (XML over TCP), true, true, false
+co.com.bancobogota.delimiter.AutraTCPDelimiter=Autra Message Delimiter, true, true, false
+co.com.bancobogota.delimiter.CoordinadorTCPDelimiter=Coordinador Message Delimiter, true, true, false
+co.com.bancobogota.delimiter.DebuggerTCPDelimiter=Debugger Message Delimiter, true, true, false
+co.com.bancobogota.delimiter.BanescoTCPDelimiter=ISO8583 Message Delimiter, true, true, false
+co.com.bancobogota.delimiter.TwoByteISO8583TCPDelimiter=TwoByteISO8583TCPDelimiter ISO8583 Message Delimiter, true, true, false
+
+
+
+###################
+#  Data Protocols #
+###################
+vseProtocols=co.com.bancobogota.dph.Iso8583DataProtocolHandler
+#com.itko.lisa.ext.iso8583.vse.dph.SVSDataProtocolHandler=data:req:resp,SVS ISO 8583 Message Converter,Convert ISO 8583 messages to and from XML
+co.com.bancobogota.dph.Iso8583DataProtocolHandler=data:req:resp,ISO 8583 Message Converter,Convert ISO 8583 messages to and from XML
