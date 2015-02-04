@@ -1,0 +1,40 @@
+<vb-config encoding="UTF-8">
+	<header-request>
+		<field name="CAJERO" type="ALPHA" length="10"/>
+		<field name="CODAGE" type="ALPHA" length="4"/>
+		<field name="FECTRN" type="DATE" length="8"/>
+		<field name="HORTR8" type="TIME" length="8"/>
+		<field name="OFLINE" type="ALPHA" length="1"/>
+		<field name="CODBCO" type="NUMERIC" length="2"/>
+		<field name="CODCAN" type="ALPHA" length="3"/>
+		<field name="IDCANA" type="NUMERIC" length="20"/>
+		<field name="CODTRN" type="NUMERIC" length="4"/>
+		<field name="CODSUP" type="ALPHA" length="10"/>
+		<field name="TIPOPE" type="ALPHA" length="1"/>
+		<field name="NUMREG" type="NUMERIC" length="4"/>
+		<field name="TIPTRN" type="ALPHA" length="1"/>
+		<field name="CONTRN" type="ALPHA" length="4"/>
+	</header-request>
+	<header-response>
+		<field name="CODTRN" type="NUMERIC" length="4"/>
+		<field name="CAJERO" type="ALPHA" length="10"/>
+		<field name="TIPOPE" type="ALPHA" length="1"/>
+		<field name="NUMREG" type="NUMERIC" length="4"/>
+		<field name="OFLINE" type="ALPHA" length="1"/>
+		<field name="CONTRN" type="ALPHA" length="4"/>
+	</header-response>
+	<parse type="0802">
+		<body-request>
+			<field name="Acd753" type="ALPHA" length="20"/>
+			<field name="Acc753" type="ALPHA" length="20"/>
+			<field name="Mto753" type="ALPHA" length="19"/>
+			<field name="Ref753" type="ALPHA" length="11"/>
+		</body-request>
+		<body-response>
+			<field name="Nom753" type="ALPHA" length="35"/>
+			<field name="Itf753" type="ALPHA" length="19"/>
+			<field name="Montoc" type="ALPHA" length="19"/>
+			<field name="Montoi" type="ALPHA" length="19"/>
+		</body-response>
+	</parse>
+</vb-config>

@@ -1,0 +1,278 @@
+<j8583-config>
+	<!-- Tipos de datos pueden ser:
+	
+		BINARY: El valor esta dado como Hexa, de longitud fija. La longitud debe estar definida de acuerdo a la longitud del valor Hexa.
+		ALPHA: El valor esta dado según el atributo encoding del elemento. Es de longitud fija. La longitud debe estar definida de acuerdo a la longitud del valor en el encoding.
+		
+		DATE4: El valor esta dado en fecha de longitud 4. Soporta atributo encoding.
+		DATE10: El valor esta dado en fecha de longitud 10. Soporta atributo encoding.
+		
+		LLVAR: Longitud variable. Soporta atributo encoding, genera resultado según encoding.
+		LLBIN: Longitud variable. En valor HEXA.
+		
+		LLLVAR: Longitud variable. Soporta atributo encoding, genera resultado según encoding.
+		LLLBIN: Longitud variable. En valor HEXA.
+		
+		NUMERIC: Número con valor fijo. Por ahora no se esta validando si es número o no.
+	-->
+
+	<parse mti="header">
+		<field name="message_length" num="1" type="BINARY" length="2" include="false"/>
+		<field name="flg_version" num="2" type="ALPHA" length="3" />
+		<field name="dest_id" num="3"  type="ALPHA" length="2" />
+		<field name="source_id" num="4"  type="ALPHA" length="2" />
+		<field name="reserved_for_use" num="5"  type="ALPHA" length="2" />
+		<field name="batch_number" num="6"   type="ALPHA" length="3"   />
+	</parse>
+	
+	<parse mti="0100">
+		<field name="DE_02_PAN" num="2" type="LLVAR" />
+		<field name="DE_03_CodigoProcessamento" num="3" type="NUMERIC" length="6" />
+		<field name="DE_04_ValorTransacao" num="4" type="NUMERIC" length="12"/>
+		<field name="DE_07_DataHoraTransmissao" num="7" type="DATE10" length="10"/>
+		<field name="DE_11_NumeroTrace" num="11" type="NUMERIC" length="6"/>
+		<field name="DE_14_DataExpiraca" num="14" type="DATE4" length="4"/>
+		<field name="DE_18_TipoComerciante" num="18" type="NUMERIC" length="4"/>
+		<field name="DE_19_CodigoPaisInstituicaoAquisicao" num="19" type="NUMERIC" length="4"/>
+		<field name="DE_22_CodigoEntradaPontoServico" num="22" type="NUMERIC" length="4"/>
+		<!-- field name="DE_23_NumeroSequenciaCartao" num="23" type="NUMERIC" length="6"/ -->
+		<field name="DE_25_CodigoCondicaoPontoServico" num="25" type="NUMERIC" length="2"/>
+		<field name="DE_32_CodigoInstituicaoAquisicao" num="32" type="LLVAR" />	
+		<field name="DE_35_Trilha2Dados" num="35" type="LLVAR"/>
+		<field name="DE_37_NumeroReferenciaRetorno" num="37" type="ALPHA" length="12" encoding="Cp037" />
+		<field name="DE_41_CartaoIdentificacaoTerminalAceitacao" num="41" type="ALPHA" length="8" encoding="Cp037"/>
+		<field name="DE_42_CartaoIdentificacaoCodigoIdentificacao" num="42" type="ALPHA" length="15" encoding="Cp037"/>
+		<field name="DE_43_CartaoIdenfiticacaoNomeLocalizacao" num="43" type="ALPHA" length="40" encoding="Cp037"/>
+		<field name="DE_49_CodigoMoedaTransacao" num="49" type="NUMERIC" length="4"/>
+		<field name="DE_52_PINData" num="52" type="ALPHA" length="16"/>
+		<field name="DE_53_SecurityControlInformation" num="53" type="NUMERIC" length="16"/>
+		<!-- field name="DE_55_ICC" num="55" type="LLVAR" / -->
+		<field name="DE_60_AdditionalPOSInformation" num="60" type="LLBIN"/>
+		<field name="DE_62_CamposCusotmizadosPagamento" num="62" type="LLBIN"/>
+		<field name="DE_63_VIP" num="63" type="LLBIN" />
+		<field name="DE_126" num="126" type="LLBIN"/>
+	</parse>
+	<parse mti="0110">
+		<field name="DE_02_PAN" num="2" type="LLVAR" />
+		<field name="DE_03_CodigoProcessamento" num="3" type="NUMERIC" length="6" />
+		<field name="DE_04_ValorTransacao" num="4" type="NUMERIC" length="12"/>
+		<field name="DE_07_DataHoraTransmissao" num="7" type="DATE10" length="10"/>
+		<field name="DE_11_NumeroTrace" num="11" type="NUMERIC" length="6"/>
+		<field name="DE_15" num="15" type="ALPHA" length="4"/>
+		<field name="DE_19_CodigoPaisInstituicaoAquisicao" num="19" type="NUMERIC" length="4"/>
+		<field name="DE_25_CodigoCondicaoPontoServico" num="25" type="NUMERIC" length="2"/>
+		<field name="DE_32_CodigoInstituicaoAquisicao" num="32" type="LLVAR"/>	
+		<field name="DE_37_NumeroReferenciaRetorno" num="37" type="ALPHA" length="12" encoding="Cp037" />
+		<field name="DE_38_IdentificacaoRespostaAutorizacao" num="38" type="ALPHA" length="6" encoding="Cp037"/>
+		<field name="DE_39_CodigoResposta" num="39" type="ALPHA" length="2" encoding="Cp037"/>
+		<field name="DE_41_CartaoIdentificacaoTerminalAceitacao" num="41" type="ALPHA" length="8" encoding="Cp037"/>
+		<field name="DE_42_CartaoIdentificacaoCodigoIdentificacao" num="42" type="ALPHA" length="15" encoding="Cp037"/>
+		<field name="DE_44_DadosAdicionaisRespposta" num="44" type="LLVAR" encoding="Cp037"/>
+		<field name="DE_49_CodigoMoedaTransacao" num="49" type="NUMERIC" length="4"/>
+		<field name="DE_62_CamposCusotmizadosPagamento" num="62" type="LLBIN"/>
+		<field name="DE_63_VIP" num="63" type="LLBIN" />
+	</parse>
+		
+	<parse mti="0200">
+		<field name="primary_account nbr" num="2" type="LLVAR" />
+        <field name="processing_code" num="3" type="NUMERIC" length="6" />
+        <field name="trans_amt" num="4" type="NUMERIC" length="12" />
+        <field name="Amount Settlement" num="5" type="NUMERIC" length="12" />
+        <field name="Amount Cardholder Billing" num="6" type="NUMERIC" length="12" />
+        <field name="gmt_date_time" num="7" type="DATE10" length="10"/>
+        <field name="Conversion Rate Settlement" num="9" type="NUMERIC" length="8" />
+        <field name="Conversion Rate Cardholder Billing" num="10" type="NUMERIC" length="8" />
+        <field name="sys_trace_audit" num="11" type="NUMERIC" length="6" />
+        <field name="local_tran_time" num="12" type="TIME" length="6"/>
+        <field name="local_tran_date" num="13" type="DATE4" length="4"/>
+        <field name="Expiration_date" num="14" type="DATE4" length="4"/>
+        <field name="settle_date" num="15" type="DATE4" length="4"/>
+        <field name="Date_Conversion" num="16" type="NUMERIC" length="4"/>
+		<field name="capture_date" num="17" type="DATE4" length="4"/>
+        <field name="merchant_type" num="18" type="NUMERIC" length="4" />
+        <field name="sys88_cntry" num="19" type="NUMERIC" length="3" />
+		<field name="forward institution country code" num="21" type="NUMERIC" length="3" />
+		<field name="pos_entry_mode" num="22" type="NUMERIC" length="3" />
+		<field name="network_indentifier" num="24" type="NUMERIC" length="3" />
+		<field name="pos_condition_code" num="25" type="NUMERIC" length="2" />
+		<field name="pos entry" num="26" type="NUMERIC" length="2" />
+        <field name="acq_inst_id" num="32" type="LLVAR" />
+        <field name="Forwarding Institution Identification Code" num="33" type="LLVAR" />
+		<field name="Primary account number extended" num="34" type="LLVAR" />
+        <field name="track2" num="35" type="LLVAR" />
+        <field name="retrvl_ref_data" num="37" type="ALPHA" length="12" />
+		<field name="auth_id_resp" num="38" type="ALPHA" length="6" />
+		<field name="responseCode" num="40" type="ALPHA" length="3" />
+        <field name="card_accept_term_data" num="41" type="ALPHA" length="16" />
+        <field name="Card Acceptor Identification Code" num="42" type="ALPHA" length="15" />
+        <field name="card_accptr_data" num="43" type="ALPHA" length="40" />
+		<field name="priv_add_data_national" num="47" type="LLLVAR"/>
+        <field name="priv_add_data" num="48" type="LLLVAR"/>
+        <field name="tran_currency_code" num="49"  type="NUMERIC" length="3" />
+        <field name="Currency Code Settlement" num="50" type="NUMERIC" length="3" />
+        <field name="Currency Code Cardholder Billing" num="51" type="NUMERIC" length="3" />
+		<field name="pin_data" num="52" type="bytes" length="16" />
+		<field name="Additional Amounts" num="54" type="LLLVAR" />
+        <field name="Additional Fees" num="55" type="LLLVAR" />
+		<field name="Numero Cheque" num="56" type="LLLVAR" />
+        <field name="pos_cc" num="58" type="LLLVAR" />
+		<field name="trml_data" num="60" type="LLLVAR" />
+		<field name="acq_transport" num="61" type="LLLVAR" />
+		<field name="postal_code" num="62" type="LLLVAR" />
+        <field name="private use" num="63" type="LLLBIN" />
+		<field name="orig_data" num="90" type="ALPHA" length="42" />
+		<field name="rcvng_inst_id" num="100"  type="LLVAR" />
+        <field name="from_acct_id" num="102" type="LLVAR" />
+        <field name="to_acct_id" num="103" type="LLVAR" />
+        <field name="tran_desc" num="104" type="LLVAR" />
+        <field name="sender_info" num="109" type="LLLVAR" />
+        <field name="receiver_info_1" num="110" type="LLLVAR" />
+		<field name="receiver_info" num="121" type="LLLVAR" />
+        <field name="recipient_code" num="123" type="LLLVAR" />
+		<field name="member-defined data" num="124" type="LLLVAR" />
+        <field name="Key Exchange" num="125" type="LLLBIN" />
+		<field name="Switch Private Data" num="126" type="LLLBIN" />
+        <field name="AcquirerTrace" num="127" type="LLLVAR" />
+		<field name="mac" num="128"  type="NUMERIC" length="16"  />
+    </parse> 
+	
+    <parse mti="0210">
+	    <field name="primary account nbr" num="2" type="LLVAR" />
+        <field name="proc_code" num="3" type="NUMERIC" length="6" />
+        <field name="trans_amt" num="4" type="NUMERIC" length="12" />
+        <field name="Amount Settlement" num="5" type="NUMERIC" length="12" />
+        <field name="Amount Cardholder Billing" num="6" type="NUMERIC" length="12" />
+        <field name="gmt_date_time" num="7" type="DATE10" length="10"/>
+        <field name="Conversion Rate Settlement" num="9" type="NUMERIC" length="8" />
+        <field name="Conversion Rate Cardholder Billing" num="10" type="NUMERIC" length="8" />
+        <field name="sys_trace_nbr" num="11" type="NUMERIC" length="6" />
+        <field name="local_time" num="12" type="TIME" length="6"/>
+        <field name="local_date" num="13" type="DATE4" length="4"/>
+		<field name="Expiration_date" num="14" type="DATE4" length="4"/>
+        <field name="settle_date" num="15" type="DATE4" length="4"/>
+		<field name="Date Conversion" num="16" type="NUMERIC" length="4"/>
+		<field name="Date Capture" num="17" type="DATE4" length="4"/>
+		<field name="merchant_type" num="18" type="NUMERIC" length="4"/>
+		<field name="sys88_cntry" num="19" type="NUMERIC" length="3" />
+		<field name="pos_entry_mode" num="22" type="NUMERIC" length="3"/>
+		<field name="network_indentifier" num="24" type="NUMERIC" length="3" />
+		<field name="pos_condition_code" num="25" type="NUMERIC" length="2" />
+        <field name="acq_inst_id" num="32" type="LLVAR" />
+		<field name="Forwarding Institution Identification Code" num="33" type="LLVAR" />
+		<field name="Primary account number extended" num="34" type="LLVAR" />
+        <field name="track_ii_data" num="35" type="LLVAR" />
+        <field name="retrieval_ref_n" num="37" type="ALPHA" length="12" />
+		<field name="auth_id_resp" num="38" type="ALPHA" length="6" />
+        <field name="responseCode" num="39" type="ALPHA" length="2" />
+		<field name="responseCode" num="40" type="ALPHA" length="3" />
+        <field name="card_accept_term_data" num="41" type="ALPHA" length="16" />
+        <field name="Card Acceptor Identification Code" num="42" type="ALPHA" length="15" />
+        <field name="card_accptr_data" num="43" type="ALPHA" length="40" />
+		<field name="addt_resp_data" num="44" type="LLVAR"/>
+		<field name="Track_1" num="45" type="LLVAR"/>
+		<field name="priv_add_data_national" num="47" type="LLLVAR"/>
+        <field name="merchant bank name" num="48" type="LLLVAR"/>
+        <field name="trans_currency" num="49"  type="NUMERIC" length="3" />
+        <field name="Currency Code Settlement" num="50" type="NUMERIC" length="3" />
+        <field name="Currency Code Cardholder Billing" num="51" type="NUMERIC" length="3" />
+		<field name="addt_amt" num="54" type="LLLVAR" />
+        <field name="Additional Fees" num="55" type="LLLVAR" />
+		<field name="Numero Cheque" num="56" type="LLLVAR" />
+        <field name="pos_cc" num="58" type="LLLVAR" />
+		<field name="Numero Aprobacion" num="59" type="LLLVAR" />
+		<field name="trml_data" num="60" type="LLLVAR" />
+		<field name="card_issuer" num="61" type="LLLVAR" />
+		<field name="postal_code" num="62" type="LLLVAR" />
+        <field name="private use" num="63" type="LLLBIN" />
+		<field name="Message number" num="72" type="NUMERIC" length="4" />
+		<field name="recv_inst_id" num="100"  type="LLVAR" />
+        <field name="from_acct_id" num="102" type="LLVAR" />
+        <field name="acct id2" num="103" type="LLVAR" />
+        <field name="tran_desc" num="104" type="LLVAR" />
+		<field name="id_acct_cnb" num="105" type="LLLVAR" />
+        <field name="sender_info" num="109" type="LLLVAR" />
+        <field name="receiver_info" num="110" type="LLLVAR" />
+		<field name="auth_agent_id" num="113" type="LLLVAR" />
+		<field name="countrycode_auth_agent" num="114" type="LLLVAR" />
+		<field name="receiver_info" num="121" type="LLLVAR" />
+		<field name="base24-postsegmentinfromation" num="122" type="LLLVAR" />
+		<field name="recipient_code" num="123" type="LLLVAR" />
+		<field name="member-defined data" num="124" type="LLLVAR" />
+        <field name="Key Exchange" num="125" type="LLLBIN" />
+		<field name="Switch Private Data" num="126" type="LLLBIN" />
+		<field name="mac" num="128"  type="NUMERIC" length="16"  />
+    </parse>
+		<parse mti="0400" >
+		<field name="DE_02_PAN" num="2" type="LLVAR" />
+		<field name="DE_03_CodigoProcessamento" num="3" type="NUMERIC" length="6" />
+		<field name="DE_04_ValorTransacao" num="4" type="NUMERIC" length="12"/>
+		<field name="DE_07_DataHoraTransmissao" num="7" type="DATE10" length="10"/>
+		<field name="DE_11_NumeroTrace" num="11" type="NUMERIC" length="6"/>
+		<field name="DE_14_DataExpiraca" num="14" type="DATE4" length="4"/>
+		<field name="DE_18_TipoComerciante" num="18" type="NUMERIC" length="4"/>
+		<field name="DE_19_CodigoPaisInstituicaoAquisicao" num="19" type="NUMERIC" length="4"/>
+		<field name="DE_22_CodigoEntradaPontoServico" num="22" type="NUMERIC" length="4"/>
+		<!-- field name="DE_23_NumeroSequenciaCartao" num="23" type="NUMERIC" length="6"/ -->
+		<field name="DE_25_CodigoCondicaoPontoServico" num="25" type="NUMERIC" length="2"/>
+		<field name="DE_32_CodigoInstituicaoAquisicao" num="32" type="LLVAR" />	
+		<field name="DE_35_Trilha2Dados" num="35" type="LLVAR"/>
+		<field name="DE_37_NumeroReferenciaRetorno" num="37" type="ALPHA" length="12" encoding="Cp037" />
+		<field name="auth_id_resp" num="38" type="ALPHA" length="6" encoding="Cp037" />
+		<field name="DE_41_CartaoIdentificacaoTerminalAceitacao" num="41" type="ALPHA" length="8" encoding="Cp037"/>
+		<field name="DE_42_CartaoIdentificacaoCodigoIdentificacao" num="42" type="ALPHA" length="15" encoding="Cp037"/>
+		<field name="DE_43_CartaoIdenfiticacaoNomeLocalizacao" num="43" type="ALPHA" length="40" encoding="Cp037"/>
+		<field name="DE_49_CodigoMoedaTransacao" num="49" type="NUMERIC" length="4"/>
+		<field name="DE_52_PINData" num="52" type="ALPHA" length="16"/>
+		<field name="DE_53_SecurityControlInformation" num="53" type="NUMERIC" length="16"/>
+		<!-- field name="DE_55_ICC" num="55" type="LLVAR" / -->
+		<field name="DE_60_AdditionalPOSInformation" num="60" type="LLBIN"/>
+		<field name="DE_62_CamposCusotmizadosPagamento" num="62" type="LLBIN"/>
+		<field name="DE_63_VIP" num="63" type="LLBIN" />
+		<field name="orig_data" num="90" type="ALPHA" length="42" />
+		<field name="tran_desc" num="104" type="LLBIN" />
+		<field name="DE_126" num="126" type="LLBIN"/>
+	</parse>
+	<parse mti="0410">
+		<field name="DE_02_PAN" num="2" type="LLVAR" />
+		<field name="DE_03_CodigoProcessamento" num="3" type="NUMERIC" length="6" />
+		<field name="DE_04_ValorTransacao" num="4" type="NUMERIC" length="12"/>
+		<field name="DE_07_DataHoraTransmissao" num="7" type="DATE10" length="10"/>
+		<field name="DE_11_NumeroTrace" num="11" type="NUMERIC" length="6"/>
+		<field name="DE_15" num="15" type="ALPHA" length="4"/>
+		<field name="DE_19_CodigoPaisInstituicaoAquisicao" num="19" type="NUMERIC" length="4"/>
+		<field name="DE_25_CodigoCondicaoPontoServico" num="25" type="NUMERIC" length="2"/>
+		<field name="DE_32_CodigoInstituicaoAquisicao" num="32" type="LLVAR"/>	
+		<field name="DE_37_NumeroReferenciaRetorno" num="37" type="ALPHA" length="12" encoding="Cp037" />
+		<field name="DE_38_IdentificacaoRespostaAutorizacao" num="38" type="ALPHA" length="6" encoding="Cp037"/>
+		<field name="DE_39_CodigoResposta" num="39" type="ALPHA" length="2" encoding="Cp037"/>
+		<field name="DE_41_CartaoIdentificacaoTerminalAceitacao" num="41" type="ALPHA" length="8" encoding="Cp037"/>
+		<field name="DE_42_CartaoIdentificacaoCodigoIdentificacao" num="42" type="ALPHA" length="15" encoding="Cp037"/>
+		<field name="DE_44_DadosAdicionaisRespposta" num="44" type="LLVAR" encoding="Cp037"/>
+		<field name="DE_49_CodigoMoedaTransacao" num="49" type="NUMERIC" length="4"/>
+		<field name="DE_62_CamposCusotmizadosPagamento" num="62" type="LLBIN"/>
+		<field name="DE_63_VIP" num="63" type="LLBIN" />
+	</parse>
+	<parse mti="0800">
+		<field name="timestamp" num="7" type="DATE10" length="10"/>
+		<field name="sys_trace_nbr" num="11" type="NUMERIC" length="6" />
+		<field name="settle_date" num="15" type="DATE4" length="4"/>
+		<field name="security_info" num="53" type="MUMERIC" length="16"/>
+		<field name="network_mgt_cde" num="70"  type="NUMERIC" length="3" />
+		<field name="message_security" num="96"  type="NUMERIC" length="8" />
+		<field name="rcvng_inst_id" num="100"  type="LLVAR" />
+		<field name="key_change_info" num="125"  type="LLLVAR" />
+		<field name="mac" num="128" type="BITMAP" length="16"    />
+	</parse>
+	<parse mti="0810">
+		<field name="timestamp" num="7" type="DATE10" length="10"/>
+		<field name="sys_trace_nbr" num="11" type="NUMERIC" length="6" />
+		<field name="settle_date" num="15" type="DATE4" length="4"/>
+		<field name="responseCode" num="39"  type="ALPHA" length="2" />
+		<field name="security_info" num="53" type="MUMERIC" length="16"/>
+		<field name="network_mgt_cde" num="70"  type="NUMERIC" length="3" />
+		<field name="message_security" num="96"  type="NUMERIC" length="8" />
+		<field name="rcvng_inst_id" num="100"  type="LLVAR" />
+		<field name="mac" num="128" type="BITMAP" length="16" />
+	</parse>	
+	
+</j8583-config>

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package co.com.extensions.format;
+package co.com.extensions.test;
 
 import co.com.extensions.handlers.CustomExtensionsHandler;
 import co.com.extensions.handlers.ISO8583Handler;

@@ -112,7 +112,7 @@ public class ISO8583Handler {
 		String nodenum1;
 		// String nodelength1;
 		String fieldlength1;
-		String emvtag = null;
+//		String emvtag = null;
 		String emvpadding = "";
 		// StringBuffer rqsb = new StringBuffer();
 		HashMap<String, String> rqhm = new HashMap<String, String>();
@@ -120,7 +120,6 @@ public class ISO8583Handler {
 		// System.out.println(nodeList.getLength());
 		
 		//Saca todo los campos que van en el XML y los pone en el HashMap rqhm
-		//TODO: Validar si es requerido o si se puede mejorar
 		for (int i = 0; i < nodeList1.getLength(); i++) {
 			Node node = nodeList1.item(i);
 			if (node.getNodeType() == Node.ELEMENT_NODE) {
@@ -141,16 +140,14 @@ public class ISO8583Handler {
 		// process response;
 		//
 		Element currentElement;
-//		String nodevalue = "";
 		String msgtype = null;
 		String myheader = "";
 		String nodenum = null;
 		String roottype;
-		String nodetype;
-		String nodelength = null;
+//		String nodetype;
+//		String nodelength = null;
 		String fieldlength = null;
-		String codec = null;
-		String encoding = null;
+//		String encoding = null;
 
 		StringBuffer sb = new StringBuffer();
 //		StringBuffer sbemv = new StringBuffer();
@@ -162,12 +159,10 @@ public class ISO8583Handler {
 		
 		log.info("begin to process field 123...");
 		
-		// TODO: Chequear si esto aplica
-		/*
+		
 		// Procesa el campo 123
 		for (int i = 0; i < nodeList1.getLength(); i++) {
 			Node node = nodeList1.item(i);
-			nodevalue = "";
 			if (node.getNodeType() == Node.ELEMENT_NODE) {
 				// do something with the current element
 				e1 = (Element) node;
@@ -177,13 +172,13 @@ public class ISO8583Handler {
 						&& e1 != null) {
 					if (!e1.getTextContent().contains("{")
 							&& e1.getTextContent().length() > 0) {
-						if (BancoBogotaHandler.convertISOCountry(e1.getTextContent().substring(2, 4)) != null) {
+						if (CustomExtensionsHandler.convertISOCountry(e1.getTextContent().substring(2, 4)) != null) {
 							
 							if (log.isDebugEnabled()){
 								log.debug("Where are in 123 field");
-								log.debug("reset country code: " + BancoBogotaHandler.convertISOCountry(e1.getTextContent().substring(2, 4)));
+								log.debug("reset country code: " + CustomExtensionsHandler.convertISOCountry(e1.getTextContent().substring(2, 4)));
 							}
-							e2.setTextContent(BancoBogotaHandler.convertISOCountry(e1.getTextContent().substring(2, 4)));
+							e2.setTextContent(CustomExtensionsHandler.convertISOCountry(e1.getTextContent().substring(2, 4)));
 							
 						}
 					}
@@ -191,10 +186,8 @@ public class ISO8583Handler {
 
 			}
 		}
-		*/
 		
 		//Construye el segundo Bitmap del XML
-		// TODO: Validar si esto se puede mejorar
 		NodeList nodeList = doc.getElementsByTagName("*");
 		// process for F65
 		Node F65 = null;
@@ -298,7 +291,6 @@ public class ISO8583Handler {
 			for (int i = 0; i < nodesChildsBody.getLength(); i++) {
 				Node nodesChildBody = nodesChildsBody.item(i);
 				if (nodesChildBody.getNodeType() == Node.ELEMENT_NODE) {
-					// TODO: Traer campos del XML
 					currentElement = (Element) nodesChildBody;
 					if (currentElement.hasAttributes()) {
 						
@@ -324,358 +316,6 @@ public class ISO8583Handler {
 		
 		String data = sb.toString();
 			
-/*
-		for (int i = 0; i < nodeList.getLength(); i++) {
-			String nodevalue = "";
-			Node node = nodeList.item(i);
-			nodevalue = "";
-			if (node.getNodeType() == Node.ELEMENT_NODE) {
-				// do something with the current element
-				currentElement = (Element) node;
-				if (node.hasAttributes()) {
-					
-					// Obtengo los valores de cada elemento XML
-					
-					nodenum = currentElement.getAttribute("num");
-					nodetype = currentElement.getAttribute("mytype");
-					nodelength = currentElement.getAttribute("length");
-					encoding = currentElement.getAttribute("encoding");
-
-					log.info("nodetype: " + nodetype + " , " + "nodenum: " + nodenum + " , " + "nodelength: " + nodelength );
-
-					// Se va a procesar los mensajes del primer bitmap
-					if (Integer.parseInt(nodenum) <= 128) {
-
-						nodevalue = currentElement.getTextContent();
-
-						if (nodetype.contains("LLVAR") && !nodenum.equals("123")) {	
-							nodelength = String.valueOf(nodevalue.length());
-							if (nodetype.contains("LLLVAR")) {
-								int t = nodelength.length();
-								String pad = "";
-								if (t != 3) {
-									for (int c = 0; c < 3 - t; c++) {
-										pad += "0";
-									}
-								}
-								fieldlength = pad + nodelength;
-							} else if (nodetype.contains("LLVAR")) {
-								int t = nodelength.length();
-								String pad = "";
-								if (t != 2) {
-									for (int c = 0; c < 2 - t; c++) {
-										pad += "0";
-									}
-								}
-								fieldlength = pad + nodelength;
-							} else {
-								fieldlength = String
-										.valueOf(nodevalue.length());
-							}
-						} else if (nodetype.contains("LLBIN")) {
-							nodelength = String.valueOf(nodevalue.length() / 2);
-							if (nodetype.contains("LLLBIN")) {
-								int t = nodelength.length();
-								String pad = "";
-								if (t != 3) {
-									for (int c = 0; c < 3 - t; c++) {
-										pad += "0";
-									}
-								}
-								fieldlength = pad + nodelength;
-							} else if (nodetype.contains("LLBIN")) {
-								int t = nodelength.length();
-								
-								String hexa = Converter.convertIntToHex(Integer.parseInt(nodelength));
-								String pad = "";
-								if (hexa.length() != 2) {
-									for (int c = 0; c < 2 - t; c++) {
-										pad += "0";
-									}
-								}
-								fieldlength = pad + hexa;
-							}
-						} else {
-							nodelength = currentElement.getAttribute("length");
-						}
-						System.out.println("before conversion: " + nodevalue);
-						String hexvalue = "";
-						if (!nodevalue.contains("{")) {
-							int templength = nodevalue.length();
-							System.out.println("value length: " + templength);
-							String finalpadding = "";
-							String padding;
-
-							if (nodelength != null && nodelength.length() > 0 && !nodetype.contains("BIN")) {
-
-								int mylength = Integer.parseInt(nodelength);
-								if (fieldlength != null && fieldlength.length() > 0) {
-									
-									int tempfieldlength = Integer .parseInt(fieldlength);
-									System.out.println("fieldlength: " + tempfieldlength + " ,mylength is:" + mylength + ", valuelength is: " + templength);
-									
-									if ((nodetype.contains("VAR") || nodetype.contains("BITMAP")) && tempfieldlength != mylength) {
-										
-										mylength = mylength / 2;
-										System.out.println("VAR length: " + mylength);
-									}
-								}
-								if (nodetype.contains("BINARY")) {
-									mylength = mylength / 2;
-								}
-
-								if (templength < mylength) {
-									System.out.println("in padding");
-
-									if (nodetype.equals("NUMERIC")) {
-										padding = "0";
-									} else {
-										padding = " ";
-									}
-									// padding = " ";
-									for (int p = 0; p < mylength - templength; p++) {
-										finalpadding += padding;
-									}
-
-								}
-								System.out.println("fieldlength is: "
-										+ fieldlength);
-								if (direction.equals("right")) { 
-									
-									if (!nodetype.contains("VAR") && !nodetype.contains("BITMAP")) {
-										
-										nodevalue = nodevalue + finalpadding;
-										
-									} else {
-										nodevalue = fieldlength + nodevalue + finalpadding;
-									}
-									System.out.println(nodevalue + ", valuelength is: " + nodevalue.length());
-									
-								} else {
-									if (!nodetype.contains("VAR") && !nodetype.contains("BITMAP")) {
-
-										System.out.println("encoding: " + encoding);
-										if ((encoding != null) && (!encoding.equals(""))) {
-
-											byte[] bites = nodevalue.getBytes(encoding);
-											nodevalue = BancoBogotaHandler.convertByteToHex(bites);
-
-										}
-										nodevalue = finalpadding + nodevalue;
-									} else {
-
-										System.out.println("encoding else: " + encoding);
-
-										if ((encoding != null) && (!encoding.equals(""))) {
-
-											byte[] bites = nodevalue.getBytes(encoding);
-											nodevalue = BancoBogotaHandler.convertByteToHex(bites);
-
-										}
-
-										if ((codec != null) && (!codec.equals(""))) {
-
-											int largo = (Integer.parseInt(fieldlength)) / 2;
-											fieldlength = Integer.toString(largo);
-
-										}
-
-										if ((fieldlength != null) && (!fieldlength.equals(""))) {
-											String longitud = Converter.convertIntToHex(Integer.parseInt(fieldlength));
-
-											if (longitud.length() % 2 != 0) {
-												longitud = "0" + longitud;
-											}
-
-											fieldlength = longitud;
-										}
-
-										nodevalue = fieldlength + finalpadding + nodevalue;
-									}
-									System.out.println(nodevalue + ", valuelength is: " + nodevalue.length());
-								}
-								hexvalue = nodevalue;
-							} else if (nodetype.contains("BIN")) {
-								System.out.println("This is a Binary field, field value is:"+ nodevalue);
-								
-								if (nodetype.contains("LL")) {
-									hexvalue = fieldlength + nodevalue;
-								} else {
-									hexvalue = nodevalue;
-								}
-							} else {
-								System.out.println("empty value fieldlength is: " + fieldlength);
-								nodevalue = fieldlength;
-								hexvalue = nodevalue;
-							}
-
-							sb.append(hexvalue);
-							System.out.println("after conversion: " + hexvalue);
-							temphm.put(nodenum, nodenum);
-						} else {
-							System.out.println("line is skipped: " + nodenum);
-						}
-						if (Integer.parseInt(nodenum) == 65) {
-							emvtag = nodevalue;
-							 if (log.isDebugEnabled()){
-								 log.debug("Variable emvtag on nodemun 65: " + emvtag);
-							 }
-						}
-					} else if (Integer.parseInt(nodenum) > 128) {
-						// emvpadding = emvtag + "000";
-						nodevalue = currentElement.getTextContent().trim();
-						System.out.println("field: " + nodenum + ", value is:"
-								+ nodevalue);
-						if (nodetype.contains("LL") && !nodenum.equals("123")) {
-							nodelength = String.valueOf(nodevalue.length());
-							if (nodetype.contains("LLL")) {
-								int t = nodelength.length();
-								String pad = "";
-								if (t != 3) {
-									for (int c = 0; c < 3 - t; c++) {
-										pad += "0";
-									}
-								}
-								fieldlength = pad + nodelength;
-							} else if (nodetype.contains("LL")) {
-								int t = nodelength.length();
-								String pad = "";
-								if (t != 2) {
-									for (int c = 0; c < 2 - t; c++) {
-										pad += "0";
-									}
-								}
-								fieldlength = pad + nodelength;
-							} else {
-								fieldlength = String
-										.valueOf(nodevalue.length());
-							}
-						} else if (nodetype.contains("LL")) {
-							nodelength = String.valueOf(nodevalue.length());
-							if (nodetype.contains("LLL")) {
-								int t = nodelength.length();
-								String pad = "";
-								if (t != 3) {
-									for (int c = 0; c < 3 - t; c++) {
-										pad += "0";
-									}
-								}
-								fieldlength = pad + nodelength;
-							} else if (nodetype.contains("LL")) {
-								int t = nodelength.length();
-								String pad = "";
-								if (t != 2) {
-									for (int c = 0; c < 2 - t; c++) {
-										pad += "0";
-									}
-								}
-								fieldlength = pad + nodelength;
-							}
-						} else {
-							nodelength = currentElement.getAttribute("length");
-							fieldlength = currentElement
-									.getAttribute("fieldlength");
-						}
-						System.out.println("before conversion: " + nodevalue);
-						String hexvalue = "";
-						if (!nodevalue.contains("{")) {
-							int templength = nodevalue.length();
-							System.out.println("value length: " + templength);
-							String finalpadding = "";
-							String padding;
-
-							if (nodelength != null && nodelength.length() > 0
-									&& !nodetype.equals("BINARY")) {
-
-								int mylength = Integer.parseInt(nodelength);
-								if (fieldlength != null
-										&& fieldlength.length() > 0) {
-									int tempfieldlength = Integer
-											.parseInt(fieldlength);
-									System.out
-											.println("fieldlength: "
-													+ tempfieldlength
-													+ " ,mylength is:"
-													+ mylength
-													+ ", valuelength is: "
-													+ templength);
-									if ((nodetype.contains("VAR") || nodetype
-											.contains("BITMAP"))
-											&& tempfieldlength != mylength) {
-										mylength = mylength / 2;
-										System.out.println("VAR length: "
-												+ mylength);
-									}
-								}
-								if (nodetype.contains("BINARY")) {
-									mylength = mylength / 2;
-								}
-
-								if (templength < mylength) {
-									System.out.println("in padding");
-
-									if (nodetype.equals("NUMERIC")) {
-										padding = "0";
-									} else {
-										padding = " ";
-									}
-									// padding = " ";
-									for (int p = 0; p < mylength - templength; p++) {
-										finalpadding += padding;
-									}
-
-								}
-								System.out.println("fieldlength is: "
-										+ fieldlength);
-								if (direction.equals("right")) {
-									if (!nodetype.contains("VAR")
-											&& !nodetype.contains("BITMAP")) {
-										nodevalue = nodevalue + finalpadding;
-									} else {
-										nodevalue = fieldlength + nodevalue
-												+ finalpadding;
-									}
-									System.out.println(nodevalue
-											+ ", valuelength is: "
-											+ nodevalue.length());
-								} else {
-									if (!nodetype.contains("VAR")
-											&& !nodetype.contains("BITMAP")) {
-										nodevalue = finalpadding + nodevalue;
-									} else {
-										nodevalue = fieldlength + finalpadding
-												+ nodevalue;
-									}
-									System.out.println(nodevalue
-											+ ", valuelength is: "
-											+ nodevalue.length());
-								}
-								hexvalue = nodevalue;
-							} else if (nodetype.equals("BINARY")) {
-								System.out
-										.println("This is a Binary field, field value is:"
-												+ nodevalue);
-								hexvalue = nodevalue;
-							} else {
-								System.out
-										.println("empty value fieldlength is: "
-												+ fieldlength);
-								nodevalue = fieldlength;
-								hexvalue = nodevalue;
-							}
-
-							sbemv.append(hexvalue);
-							System.out.println("after conversion: " + hexvalue);
-							emvhm.put(nodenum, nodenum);
-						} else {
-							System.out.println("line is skipped: " + nodenum);
-						}
-					}
-
-				}
-			}
-		}
-		*/
 		// process bitmap1 and bitmap2
 		log.info("process bitmap1 and bitmap2");
 		StringBuffer btsb = new StringBuffer();
@@ -713,7 +353,6 @@ public class ISO8583Handler {
 //		String datahex = sb.toString() + sbemv.toString();
 		
 
-		// TODO: Este header cuando tiene de largo 4 en HEXA.
 		String finaldata = (msgtype + bitdata + data).toUpperCase();
 		/*
 		 * int datalength = finaldata.length() / 2; String finalheader =
@@ -970,7 +609,7 @@ public class ISO8583Handler {
 						pad += "0";
 					}
 				}
-				fieldlength = nodelength;
+				fieldlength = pad + nodelength;
 			} else if (nodetype.contains("LLBIN")) {
 				int t = nodelength.length();
 				
@@ -981,7 +620,7 @@ public class ISO8583Handler {
 						pad += "0";
 					}
 				}
-				fieldlength = hexa;
+				fieldlength = pad + hexa;
 			}
 		} else {
 			fieldlength = elemento.getLength();
@@ -989,563 +628,6 @@ public class ISO8583Handler {
 		return fieldlength;
 	}
 
-/*
-	public static Object ISO8583XmlToObject(String myfile, String direction,
-			boolean isFile, boolean isBinary, String contenttype)
-			throws Exception {
-		// StringReader sr = new StringReader(xmldata);
-		System.out.println("start processing: " + myfile);
-		// String direction = "left";
-		DocumentBuilder dBuilder;
-		Document doc = null;
-		try {
-			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-			dBuilder = dbFactory.newDocumentBuilder();
-			
-			if (isFile) {
-				File f = new File(myfile);
-				doc = dBuilder.parse(f);
-			} else {
-				StringReader sr = new StringReader(myfile);
-				doc = dBuilder.parse(new InputSource(sr));
-			}
-		} catch (ParserConfigurationException e) {
-			throw new RuntimeException(e);
-		}
-
-		NodeList nodeList1 = doc.getElementsByTagName("*");
-		Element currentElement1;
-		String nodetype1;
-		String nodenum1;
-		String fieldlength1;
-		String emvtag = null;
-		String emvpadding = "";
-		HashMap<String, String> rqhm = new HashMap<String, String>();
-
-		// System.out.println(nodeList.getLength());
-
-		for (int i = 0; i < nodeList1.getLength(); i++) {
-			Node node = nodeList1.item(i);
-			if (node.getNodeType() == Node.ELEMENT_NODE) {
-				// do something with the current element
-				currentElement1 = (Element) node;
-				nodetype1 = currentElement1.getAttribute("mytype");
-				nodenum1 = currentElement1.getAttribute("num");
-				fieldlength1 = currentElement1.getAttribute("fieldlength");
-				if (nodetype1.contains("VAR") || nodetype1.contains("BITMAP")) {
-					rqhm.put(nodenum1, fieldlength1);
-					System.out.println("field: " + nodenum1
-							+ " field length is: " + fieldlength1);
-				}
-
-			}
-		}
-
-		// process response;
-		//
-		Element currentElement;
-		String nodevalue = "";
-		String msgtype = null;
-		String myheader = "";
-		String nodenum = null;
-		String roottype;
-		String nodetype;
-		String nodelength = null;
-		String fieldlength = null;
-		StringBuffer sb = new StringBuffer();
-		StringBuffer sbemv = new StringBuffer();
-		HashMap<String, String> temphm = new HashMap<String, String>();
-		HashMap<String, String> emvhm = new HashMap<String, String>();
-		
-		NodeList nodeList = doc.getElementsByTagName("*");
-		// process for F65
-		Node F65 = null;
-		String emvflag = null;
-		Element tcurrentElement;
-		for (int i = 0; i < nodeList.getLength(); i++) {
-			Node node = nodeList.item(i);
-
-			if (node.getNodeType() == Node.ELEMENT_NODE) {
-				// do something with the current element
-				tcurrentElement = (Element) node;
-				String num = tcurrentElement.getAttribute("num");
-				if (num.equals("65")) {
-					emvflag = tcurrentElement.getTextContent();
-					if (emvflag != null && emvflag.length() > 0) {
-						F65 = tcurrentElement;
-					}
-				}
-
-				if (emvflag != null && emvflag.length() > 0
-						&& Integer.parseInt(num) > 128) {
-					// process bitmap3 if exists
-
-					emvhm.put(num, num);
-
-				}
-
-			}
-		}
-		// set F65 value after bitmap calculation
-		if (emvflag != null && emvflag.length() > 0) {
-			System.out.println("process bitmap3");
-
-			if (emvhm.size() > 0) {
-				StringBuffer btsb1 = new StringBuffer();
-				// btsb1.append("1");
-				for (int r = 129; r < 193; r++) {
-					if (emvhm.containsKey(String.valueOf(r))) {
-						btsb1.append("1");
-					} else {
-						btsb1.append("0");
-					}
-				}
-
-				String binarydata1 = btsb1.toString();
-				String bitdata1 = "";
-				System.out.println("bitmap3: " + binarydata1);
-				for (int e = 0; e < binarydata1.length(); e += 4) {
-					// System.out.println("currentHex: "+binarydata.substring(e,e+4));
-					bitdata1 += BancoBogotaHandler
-							.convertBinaryToHex(binarydata1.substring(e, e + 4));
-				}
-				emvpadding = bitdata1;
-				System.out.println(emvpadding);
-				F65.setTextContent(emvpadding);
-			}
-		}
-
-		for (int i = 0; i < nodeList.getLength(); i++) {
-			Node node = nodeList.item(i);
-			nodevalue = "";
-			if (node.getNodeType() == Node.ELEMENT_NODE) {
-				// do something with the current element
-				
-				System.out.println("Iteracion: " + i);
-				System.out.println(sb);
-				
-				currentElement = (Element) node;
-				nodenum = currentElement.getAttribute("num");
-				roottype = currentElement.getAttribute("type");
-				nodetype = currentElement.getAttribute("mytype");
-				nodelength = currentElement.getAttribute("length");
-				fieldlength = currentElement.getAttribute("fieldlength");
-
-				if (roottype != null && roottype.length() > 0) {
-					if (currentElement.getAttribute("header") != null
-							&& currentElement.getAttribute("header").length() > 0) {
-						myheader = currentElement.getAttribute("header");
-					}
-					msgtype = BancoBogotaHandler.convertStringToHex(roottype);
-				} else if (Integer.parseInt(nodenum) <= 128) {
-
-					nodevalue = currentElement.getTextContent();
-
-					if (nodetype.contains("LLVAR") && !nodenum.equals("123")) {
-						nodelength = String.valueOf(nodevalue.length());
-						if (nodetype.contains("LLLVAR")) {
-							int t = nodelength.length();
-							String pad = "";
-							if (t != 3) {
-								for (int c = 0; c < 3 - t; c++) {
-									pad += "0";
-								}
-							}
-							fieldlength = pad + nodelength;
-						} else if (nodetype.contains("LLVAR")) {
-							int t = nodelength.length();
-							String pad = "";
-							if (t != 2) {
-								for (int c = 0; c < 2 - t; c++) {
-									pad += "0";
-								}
-							}
-							fieldlength = pad + nodelength;
-						} else {
-							fieldlength = String.valueOf(nodevalue.length());
-						}
-					} else if (nodetype.contains("LLBIN")) {
-						nodelength = String.valueOf(nodevalue.length() / 2);
-						if (nodetype.contains("LLLBIN")) {
-							int t = nodelength.length();
-							String pad = "";
-							if (t != 3) {
-								for (int c = 0; c < 3 - t; c++) {
-									pad += "0";
-								}
-							}
-							fieldlength = pad + nodelength;
-						} else if (nodetype.contains("LLBIN")) {
-							int t = nodelength.length();
-							String pad = "";
-							if (t != 2) {
-								for (int c = 0; c < 2 - t; c++) {
-									pad += "0";
-								}
-							}
-							fieldlength = pad + nodelength;
-						}
-					} else {
-						nodelength = currentElement.getAttribute("length");
-						fieldlength = currentElement
-								.getAttribute("fieldlength");
-					}
-					System.out.println("before conversion: " + nodevalue);
-					String hexvalue = "";
-					if (!nodevalue.contains("{")) {
-						int templength = nodevalue.length();
-						System.out.println("value length: " + templength);
-						String finalpadding = "";
-						String padding;
-
-						if (nodelength != null && nodelength.length() > 0
-								&& !nodetype.contains("BIN")) {
-
-							int mylength = Integer.parseInt(nodelength);
-							if (fieldlength != null && fieldlength.length() > 0) {
-								int tempfieldlength = Integer
-										.parseInt(fieldlength);
-								System.out.println("fieldlength: "
-										+ tempfieldlength + " ,mylength is:"
-										+ mylength + ", valuelength is: "
-										+ templength);
-								if ((nodetype.contains("VAR") || nodetype
-										.contains("BITMAP"))
-										&& tempfieldlength != mylength) {
-									mylength = mylength / 2;
-									System.out.println("VAR length: "
-											+ mylength);
-								}
-							}
-							if (nodetype.contains("BINARY")) {
-								mylength = mylength / 2;
-							}
-
-							if (templength < mylength) {
-								System.out.println("in padding");
-
-								if (nodetype.equals("NUMERIC")) {
-									padding = "0";
-								} else {
-									padding = " ";
-								}
-								// padding = " ";
-								for (int p = 0; p < mylength - templength; p++) {
-									finalpadding += padding;
-								}
-
-							}
-							System.out
-									.println("fieldlength is: " + fieldlength);
-							if (direction.equals("right")) {
-								if (!nodetype.contains("VAR")
-										&& !nodetype.contains("BITMAP")) {
-									nodevalue = nodevalue + finalpadding;
-								} else {
-									nodevalue = fieldlength + nodevalue
-											+ finalpadding;
-								}
-								System.out.println(nodevalue
-										+ ", valuelength is: "
-										+ nodevalue.length());
-							} else {
-								if (!nodetype.contains("VAR")
-										&& !nodetype.contains("BITMAP")) {
-									nodevalue = finalpadding + nodevalue;
-								} else {
-									nodevalue = fieldlength + finalpadding
-											+ nodevalue;
-								}
-								System.out.println(nodevalue
-										+ ", valuelength is: "
-										+ nodevalue.length());
-							}
-							hexvalue = BancoBogotaHandler
-									.convertStringToHex(nodevalue);
-						} else if (nodetype.contains("BIN")) {
-							System.out
-									.println("This is a Binary field, field value is:"
-											+ nodevalue);
-							if (nodetype.contains("LL")) {
-								hexvalue = Converter
-										.convertStringToHex(fieldlength)
-										+ nodevalue;
-							} else {
-								hexvalue = nodevalue;
-							}
-						} else {
-							System.out.println("empty value fieldlength is: "
-									+ fieldlength);
-							nodevalue = fieldlength;
-							hexvalue = BancoBogotaHandler
-									.convertStringToHex(nodevalue);
-						}
-
-						sb.append(hexvalue);
-						System.out.println("after conversion: " + hexvalue);
-						temphm.put(nodenum, nodenum);
-					} else {
-						System.out.println("line is skipped: " + nodenum);
-					}
-					if (Integer.parseInt(nodenum) == 65) {
-						if (log.isDebugEnabled()){
-							 log.debug("Variable emvtag on nodemun 65: " + emvtag);
-						 }
-					}
-				} else if (Integer.parseInt(nodenum) > 128) {
-					// emvpadding = emvtag + "000";
-					nodevalue = currentElement.getTextContent().trim();
-					System.out.println("field" + nodenum + ", value is:"
-							+ nodevalue);
-					if (nodetype.contains("LL") && !nodenum.equals("123")) {
-						nodelength = String.valueOf(nodevalue.length());
-						if (nodetype.contains("LLL")) {
-							int t = nodelength.length();
-							String pad = "";
-							if (t != 3) {
-								for (int c = 0; c < 3 - t; c++) {
-									pad += "0";
-								}
-							}
-							fieldlength = pad + nodelength;
-						} else if (nodetype.contains("LL")) {
-							int t = nodelength.length();
-							String pad = "";
-							if (t != 2) {
-								for (int c = 0; c < 2 - t; c++) {
-									pad += "0";
-								}
-							}
-							fieldlength = pad + nodelength;
-						} else {
-							fieldlength = String.valueOf(nodevalue.length());
-						}
-					} else if (nodetype.contains("LL")) {
-						nodelength = String.valueOf(nodevalue.length());
-						if (nodetype.contains("LLL")) {
-							int t = nodelength.length();
-							String pad = "";
-							if (t != 3) {
-								for (int c = 0; c < 3 - t; c++) {
-									pad += "0";
-								}
-							}
-							fieldlength = pad + nodelength;
-						} else if (nodetype.contains("LL")) {
-							int t = nodelength.length();
-							String pad = "";
-							if (t != 2) {
-								for (int c = 0; c < 2 - t; c++) {
-									pad += "0";
-								}
-							}
-							fieldlength = pad + nodelength;
-						}
-					} else {
-						nodelength = currentElement.getAttribute("length");
-						fieldlength = currentElement
-								.getAttribute("fieldlength");
-					}
-					System.out.println("before conversion: " + nodevalue);
-					String hexvalue = "";
-					if (!nodevalue.contains("{")) {
-						int templength = nodevalue.length();
-						System.out.println("value length: " + templength);
-						String finalpadding = "";
-						String padding;
-
-						if (nodelength != null && nodelength.length() > 0
-								&& !nodetype.equals("BINARY")) {
-
-							int mylength = Integer.parseInt(nodelength);
-							if (fieldlength != null && fieldlength.length() > 0) {
-								int tempfieldlength = Integer
-										.parseInt(fieldlength);
-								System.out.println("fieldlength: "
-										+ tempfieldlength + " ,mylength is:"
-										+ mylength + ", valuelength is: "
-										+ templength);
-								if ((nodetype.contains("VAR") || nodetype
-										.contains("BITMAP"))
-										&& tempfieldlength != mylength) {
-									mylength = mylength / 2;
-									System.out.println("VAR length: "
-											+ mylength);
-								}
-							}
-							if (nodetype.contains("BINARY")) {
-								mylength = mylength / 2;
-							}
-
-							if (templength < mylength) {
-								System.out.println("in padding");
-
-								if (nodetype.equals("NUMERIC")) {
-									padding = "0";
-								} else {
-									padding = " ";
-								}
-								// padding = " ";
-								for (int p = 0; p < mylength - templength; p++) {
-									finalpadding += padding;
-								}
-
-							}
-							System.out
-									.println("fieldlength is: " + fieldlength);
-							if (direction.equals("right")) {
-								if (!nodetype.contains("VAR")
-										&& !nodetype.contains("BITMAP")) {
-									nodevalue = nodevalue
-											+ BancoBogotaHandler
-													.convertStringToHex(finalpadding);
-								} else {
-									nodevalue = BancoBogotaHandler
-											.convertStringToHex(fieldlength)
-											+ nodevalue
-											+ BancoBogotaHandler
-													.convertStringToHex(finalpadding);
-								}
-								System.out.println(nodevalue
-										+ ", valuelength is: "
-										+ nodevalue.length());
-							} else {
-								if (!nodetype.contains("VAR")
-										&& !nodetype.contains("BITMAP")) {
-									nodevalue = BancoBogotaHandler
-											.convertStringToHex(finalpadding)
-											+ nodevalue;
-								} else {
-									nodevalue = BancoBogotaHandler
-											.convertStringToHex(fieldlength
-													+ finalpadding)
-											+ nodevalue;
-								}
-								System.out.println(nodevalue
-										+ ", valuelength is: "
-										+ nodevalue.length());
-							}
-							hexvalue = nodevalue;
-						} else if (nodetype.equals("BINARY")) {
-							System.out
-									.println("This is a Binary field, field value is:"
-											+ nodevalue);
-							hexvalue = nodevalue;
-						} else {
-							System.out.println("empty value fieldlength is: "
-									+ fieldlength);
-							nodevalue = fieldlength;
-							hexvalue = nodevalue;
-						}
-
-						sbemv.append(hexvalue);
-						System.out.println("after conversion: " + hexvalue);
-						emvhm.put(nodenum, nodenum);
-					} else {
-						System.out.println("line is skipped: " + nodenum);
-					}
-				}
-
-			}
-		}
-		// process bitmap1 and bitmap2
-		System.out.println("process bitmap1 and bitmap2");
-		StringBuffer btsb = new StringBuffer();
-
-		int bitmappoint = 0;
-		if (Integer.parseInt(nodenum) > 64) {
-			bitmappoint = 129;
-			btsb.append("1");
-		} else {
-			bitmappoint = 65;
-			btsb.append("0");
-		}
-		for (int r = 2; r < bitmappoint; r++) {
-			if (temphm.containsKey(String.valueOf(r))) {
-				btsb.append("1");
-			} else {
-				btsb.append("0");
-			}
-		}
-
-		String binarydata = btsb.toString();
-		String bitdata = "";
-		System.out.println("bitmap1 and 2: " + binarydata);
-		for (int e = 0; e < binarydata.length(); e += 4) {
-			// System.out.println("currentHex: "+binarydata.substring(e,e+4));
-			bitdata += BancoBogotaHandler.convertBinaryToHex(binarydata
-					.substring(e, e + 4));
-		}
-		// bitdata = convertStringToHex(bitdata);
-		System.out.println("bitmap1 and 2 Hex: " + bitdata);
-
-		System.out.println(sb.toString() + sbemv.toString());
-		String datahex = sb.toString() + sbemv.toString();
-		String finaldata = (msgtype + bitdata + datahex).toUpperCase();
-		int datalength = finaldata.length() / 2;
-		String finalheader = Integer.toHexString(datalength);
-		if (finalheader.length() < 4) {
-			String padding = "";
-			for (int n = 0; n < 4 - finalheader.length(); n++) {
-				padding += "0";
-			}
-			finalheader = padding + finalheader;
-		}
-
-		if (contenttype.toUpperCase().equals("STRING")) {
-			if (myheader.length() > 0 && myheader != null) {
-				System.out.println("convert to string with header");
-				msgtype = Converter.convertHexToString(msgtype);
-				System.out.println("message type string: " + msgtype);
-				System.out.println("bitmap data Hex: " + bitdata);
-				datahex = Converter.convertHexToString(sb.toString()
-						+ sbemv.toString());
-				System.out.println("data field string: " + datahex);
-				finaldata = finalheader + msgtype + bitdata + datahex;
-			} else {
-				System.out.println("convert to string wo header");
-				msgtype = Converter.convertHexToString(msgtype);
-				System.out.println("message type string: " + msgtype);
-				System.out.println("bitmap data Hex: " + bitdata);
-				datahex = Converter.convertHexToString(sb.toString()
-						+ sbemv.toString());
-				System.out.println("data field string: " + datahex);
-				finaldata = msgtype + bitdata + datahex;
-			}
-
-		} else {
-			if (myheader.length() > 0 && myheader != null) {
-				System.out.println("convert to hex wo header");
-				finaldata = (finalheader + msgtype + bitdata + datahex)
-						.toUpperCase();
-				System.out.println("message type Hex: " + msgtype);
-				System.out.println("bitmap data Hex: " + bitdata);
-				System.out.println("data field Hex: " + datahex);
-				System.out.println("final data: " + finaldata);
-			} else {
-				System.out.println("convert to hex with header");
-				finaldata = (msgtype + bitdata + datahex).toUpperCase();
-				System.out.println("message type Hex: " + msgtype);
-				System.out.println("bitmap data Hex: " + bitdata);
-				System.out.println("data field Hex: " + datahex);
-				System.out.println("final data: " + finaldata);
-			}
-			finaldata.toUpperCase();
-
-		}
-
-		// finaldata = (finalheader + msgtype + bitdata +
-		// datahex).toUpperCase();
-
-		if (isBinary) {
-			return BancoBogotaHandler.convertHexToByte(finaldata);
-		} else {
-			return finaldata;
-		}
-	}
-
-	
-*/	
 	/**
 	 * 
 	 * @param configfile
@@ -1672,7 +754,6 @@ public class ISO8583Handler {
 					String tagEncoding = childtemp.getAttribute("encoding");
 					
 					String tagvalue = null;
-					String LLlength = null;
 					System.out.println("mytagname is: " + tagname + ", mytagnum is: " + tagnum + ", mytype is:" + tagtype + ", mylength is: " + taglength + ", start point is: " + fieldstart + ", got match lines? " + hm.containsKey(tagnum));
 
 					String encoding = Charset.defaultCharset().displayName();
@@ -1690,10 +771,11 @@ public class ISO8583Handler {
 							fieldstart += Integer.parseInt(taglength) * factor;
 
 						} else {
+//							String LLlength = null;
 
-							if (tagtype.equals("LLBIN")) {
+							if (tagtype.equals("LBIN")) {
 
-								LLlength = CustomExtensionsHandler.convertHexToString(hexbody.substring(fieldstart, fieldstart + 2));
+//								LLlength = CustomExtensionsHandler.convertHexToString(hexbody.substring(fieldstart, fieldstart + 2));
 								int fieldlength = Integer.parseInt(CustomExtensionsHandler.convertHexToString(hexbody.substring(fieldstart,fieldstart + 2))) * factor;
 								taglength = String .valueOf(fieldlength / 2);
 								System.out.println("LLBIN length is: " + fieldlength);
@@ -1702,7 +784,7 @@ public class ISO8583Handler {
 
 							} else if (tagtype.equals("LLBIN")) {
 
-								LLlength = CustomExtensionsHandler.convertHexToString(hexbody.substring(fieldstart, fieldstart + 4));
+//								LLlength = CustomExtensionsHandler.convertHexToString(hexbody.substring(fieldstart, fieldstart + 4));
 								int fieldlength = Integer.parseInt(CustomExtensionsHandler.convertHexToString(hexbody.substring(fieldstart,fieldstart + 4))) * factor;
 								taglength = String .valueOf(fieldlength / 2);
 								System.out.println("LLBIN length is: " + fieldlength);
@@ -1711,7 +793,7 @@ public class ISO8583Handler {
 
 							} else if (tagtype.equals("LLLBIN")) {
 
-								LLlength = CustomExtensionsHandler.convertHexToString(hexbody.substring(fieldstart, fieldstart + 6));
+//								LLlength = CustomExtensionsHandler.convertHexToString(hexbody.substring(fieldstart, fieldstart + 6));
 								int fieldlength = Integer.parseInt(CustomExtensionsHandler.convertHexToString(hexbody.substring(fieldstart,fieldstart + 6))) * factor;
 								taglength = String .valueOf(fieldlength / 2);
 								System.out.println("LLLBIN length is: " + fieldlength);
@@ -1720,7 +802,7 @@ public class ISO8583Handler {
 
 							}else if (tagtype.equals("LVAR")) {
 								
-								LLlength = CustomExtensionsHandler.convertHexToString(hexbody.substring(fieldstart, fieldstart + 2));
+//								LLlength = CustomExtensionsHandler.convertHexToString(hexbody.substring(fieldstart, fieldstart + 2));
 								
 								int fieldlength = Integer.parseInt(CustomExtensionsHandler.convertHexToString(hexbody.substring(fieldstart,fieldstart + 2)))* factor;
 								taglength = String.valueOf(fieldlength / factor);
@@ -1730,7 +812,7 @@ public class ISO8583Handler {
 								
 							} else if (tagtype.equals("LLVAR")) {
 								
-								LLlength = CustomExtensionsHandler.convertHexToString(hexbody.substring(fieldstart, fieldstart + 4));
+//								LLlength = CustomExtensionsHandler.convertHexToString(hexbody.substring(fieldstart, fieldstart + 4));
 								int fieldlength = Integer.parseInt(CustomExtensionsHandler.convertHexToString(hexbody.substring(fieldstart,fieldstart + 4)))* factor;
 								taglength = String.valueOf(fieldlength / factor);
 								System.out.println("LLVAR length is: "+ fieldlength);
@@ -1739,7 +821,7 @@ public class ISO8583Handler {
 								
 							} else if (tagtype.equals("LLLVAR")) {
 								
-								LLlength = CustomExtensionsHandler.convertHexToString(hexbody.substring(fieldstart, fieldstart + 6));
+//								LLlength = CustomExtensionsHandler.convertHexToString(hexbody.substring(fieldstart, fieldstart + 6));
 								int fieldlength = Integer.parseInt(CustomExtensionsHandler.convertHexToString(hexbody.substring(fieldstart,fieldstart + 6))) * factor;
 								taglength = String .valueOf(fieldlength / factor);
 								System.out.println("LLLVAR length is: " + fieldlength);
