@@ -30,21 +30,23 @@ public class TCPClient {
 
 	public static void main(String argv[]) throws Exception {
 
-		String sentence = "ISO0250000550200F23CC581A8E3801A00000000140000BC194097446491751690   003000000009254000010721320515160416320501072001010700000120030811170000100191117001000101374097446491751690=2001                00000215160400002           0102       0000Seguros de Vida Colpat11001        11 CO0240000000000000000000000000270000000000002003021000000001700160090TES10000    019    TES1030        048& 0000200048! C000026                   20      11           284097446491751690            020                    0201000021723          009000000000012  B24 B24 1 038                                      ";
+		String sentence = "42524e2d3031342d57532d32312020201c803933303030301c815353445341444d1c8230303134303031371c9131353032313903";
+		
+//		sentence = Converter.convertHexToByte(sentence);
 		
 		TCPClient client = new TCPClient();
 		
-		String messageRequest = client.prepareMessage(sentence);
-		client.sendBytes(messageRequest.getBytes());
+//		String messageRequest = client.prepareMessage(sentence);
+		client.sendBytes(Converter.convertHexToByte(sentence));
 		
 		byte[] response = client.readBytes();
 		String messageResponse = new String(response);
 		
-		System.out.println("Message Sent: " + messageRequest);
+//		System.out.println("Message Sent: " + messageRequest);
 		System.out.println("Message Received: " + messageResponse);
 		
 		client.close();
-
+		
 	}
 
 	/**
@@ -69,7 +71,7 @@ public class TCPClient {
 		
 		String resultHex = longitud + hexData;
 		
-		String messageRequest =Converter.convertHexToString(resultHex);
+		String messageRequest =Converter.convertHexToString(hexData);
 		return messageRequest;
 	}
 	

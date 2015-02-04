@@ -80,6 +80,7 @@ public class Iso8583DataProtocolHandler extends ParameterListDataProtocol {
 			String valueConfig = parameterList.get(CONFIG_PARAM_KEY);
 			String valueHeader = parameterList.get(HEADER_PARAM_KEY);
 			
+			
 			requestPre = Converter.convertByteToHex(payloadBody);
 			
 			logger.info("Mensaje ISO8583: " + requestPre);
@@ -90,6 +91,7 @@ public class Iso8583DataProtocolHandler extends ParameterListDataProtocol {
 			
 			request.setBinary(false);
 			request.setBody(message);
+			
 			
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
@@ -144,7 +146,7 @@ public class Iso8583DataProtocolHandler extends ParameterListDataProtocol {
 	public void updateResponse(TestExec testExec, TransientResponse response) {
 		try {
 			String xmlISO8583 = new String (response.getBodyAsByteArray());
-			xmlISO8583 = testExec.parseInState(xmlISO8583);
+			xmlISO8583 = testExec.parseInState(xmlISO8583); 
 			
 			logger.info("Message ISO Parser: " + xmlISO8583);
 			

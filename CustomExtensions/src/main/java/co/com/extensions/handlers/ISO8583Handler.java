@@ -19,7 +19,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import co.com.extensions.util.Elemento;
+import co.com.extensions.util.ElementoISO8583;
 
 import com.google.common.base.Charsets;
 import com.itko.citi.Converter;
@@ -269,7 +269,7 @@ public class ISO8583Handler {
 					currentElement = (Element) nodesChildHeader;
 					if (currentElement.hasAttributes()) {
 						
-						Elemento elemento = Elemento.getElemento(currentElement);
+						ElementoISO8583 elemento = ElementoISO8583.getElemento(currentElement);
 						fieldlength = getLenthFromVariableAttribute( fieldlength, elemento);
 						setValueFromElemento(direction, fieldlength,elemento);
 						
@@ -294,7 +294,7 @@ public class ISO8583Handler {
 					currentElement = (Element) nodesChildBody;
 					if (currentElement.hasAttributes()) {
 						
-						Elemento elemento = Elemento.getElemento(currentElement);
+						ElementoISO8583 elemento = ElementoISO8583.getElemento(currentElement);
 						if (Integer.parseInt(elemento.getNum()) <= 128) {
 							
 							fieldlength = getLenthFromVariableAttribute( fieldlength, elemento);
@@ -387,7 +387,7 @@ public class ISO8583Handler {
 	 * @return
 	 * @throws UnsupportedEncodingException
 	 */
-	private static void setValueFromElemento(String direction, String fieldlength, Elemento elemento) throws Exception {
+	private static void setValueFromElemento(String direction, String fieldlength, ElementoISO8583 elemento) throws Exception {
 		
 		String nodetype = elemento.getType();
 		String nodelength = elemento.getLength();
@@ -569,7 +569,7 @@ public class ISO8583Handler {
 	 * @param elemento
 	 * @return
 	 */
-	private static String getLenthFromVariableAttribute(String fieldlength, Elemento elemento) {
+	private static String getLenthFromVariableAttribute(String fieldlength, ElementoISO8583 elemento) {
 		String nodelength;
 		String nodenum = elemento.getNum();
 		String nodetype = elemento.getType();
@@ -1200,8 +1200,7 @@ public class ISO8583Handler {
 		if (contentType.equals(CustomExtensionsHandler.CONTENT_TYPE_HEXA)) {
 
 			System.out.println("ISO Message HEXA Content");
-			return ISO8583Handler.ISO8583ParserHex(configfile, o, header,
-					isBinary);
+			return ISO8583Handler.ISO8583ParserHex(configfile, o, header, isBinary);
 
 		} else if (contentType.equals(CustomExtensionsHandler.CONTENT_TYPE_ASCII)) {
 

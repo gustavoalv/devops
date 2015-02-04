@@ -103,7 +103,7 @@ public class VBHandler {
 			Document docParse = dBuilder.parse(file);
 
 			// Encoding del Documento
-			NodeList iscList = docParse.getElementsByTagName("vb-config");
+			NodeList iscList = docParse.getElementsByTagName("bms-config");
 			Element iscConfig = (Element) iscList.item(0);
 			encoding = iscConfig.getAttribute("encoding");
 

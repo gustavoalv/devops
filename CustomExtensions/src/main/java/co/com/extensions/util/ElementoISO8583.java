@@ -10,10 +10,10 @@ import org.w3c.dom.Element;
  * @author alvgu02
  *
  */
-public class Elemento {
+public class ElementoISO8583 {
 
 	
-	private static Logger log = Logger.getLogger(Elemento.class);
+	private static Logger log = Logger.getLogger(ElementoISO8583.class);
 	
 	/**
 	 * 
@@ -115,8 +115,8 @@ public class Elemento {
 	/**
 	 * @param currentElement
 	 */
-	public static Elemento getElemento(Element currentElement) {
-		Elemento elemento = new Elemento();
+	public static ElementoISO8583 getElemento(Element currentElement) {
+		ElementoISO8583 elemento = new ElementoISO8583();
 		elemento.setEncoding(currentElement.getAttribute("encoding"));
 		elemento.setLength(currentElement.getAttribute("length"));
 		elemento.setNum(currentElement.getAttribute("num"));

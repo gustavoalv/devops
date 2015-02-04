@@ -44,10 +44,16 @@ public class TCPServer {
 				
 				System.out.println("Message Received Server: " + message);
 				
-				String sentence = "ISO0250000530210B23C84812EC9841A00000000140000DC0030000000000101000107211932151606163550010799120107012081117000010019374097446491751690=9912                0000021516060000005400002           0102       000076                                                                            027000000000000200302100000000170012            0160090TES10000    0190019TES103000000000114& 0000300114! C000026                   20      ! QE00056                                                         1110000000019284097446491751690            020                  P0011           009000000000012V B24 B24 1 038000                                   ";
-				String response = server.prepareMessage(sentence);
+				String sentence = "42524e2d3031342d57532d32312020201c803933303030301c81205353445341444d1c8231343030313720201cae301cb0303403";
 				
-				server.sendBytes(response.getBytes());
+//				sentence = Converter.convertHexToString(sentence);
+//				
+//				String response = server.prepareMessage(sentence);
+				
+//				server.sendBytes(response.getBytes());
+				server.sendBytes(Converter.convertHexToByte(sentence));
+				
+				
 			} else {
 				server.setConnectionSocket(server.getWelcomeSocket().accept());
 			}

@@ -17,13 +17,17 @@ public class VBFormat {
 	public static void main(String argv[]) throws Exception {
 		
 		co.com.extensions.md5.MD5.encriptarPorMD5("clave");
-		String configfile = "C:\\Lisa7.5.2\\vb-config.xml";
+//		String configfile = "C:\\Lisa7.5.2\\vb-config.xml";
+		
+		String configfile = "C:\\Lisa8.0.2\\Projects\\Bancomer_Project_00\\Data\\CICS\\config\\bms-config.xml";
 		
 
 		// Conversion HEX a ISO8583 - Request
 		{
  
-			String message = "BAN0591W0105912014111810532500101INT000000000000000000000003BAN0591W171278900000J293867940";
+//			String message = "BAN0591W0105912014111810532500101INT000000000000000000000003BAN0591W171278900000J293867940";
+			
+			String message = "   I3423454545555NUSC60010132323   INT.01 CCOYOACAN                      PATRIM C  ";
 			
 			String resultXML;
 			if(message.length() > 80){
@@ -33,7 +37,7 @@ public class VBFormat {
 				byte[] dataByteAscii = Converter.convertHexToByte(hexaMessage);
 	
 				// VB
-				resultXML = VBHandler.VBParser(configfile, dataByteAscii, 160, true, CustomExtensionsHandler.CONTENT_TYPE_HEXA, CustomExtensionsHandler.TYPE_MESSAGE_REQUEST);
+				resultXML = VBHandler.VBParser(configfile, dataByteAscii, 0, true, CustomExtensionsHandler.CONTENT_TYPE_HEXA, CustomExtensionsHandler.TYPE_MESSAGE_REQUEST);
 				
 				// CONCENTRADO
 	//			String resultHexa = VBHandler.VBParser(configfile, dataByteAscii, 96, true, BancoBogotaHandler.CONTENT_TYPE_HEXA, BancoBogotaHandler.TYPE_MESSAGE_REQUEST);

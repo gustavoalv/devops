@@ -11,9 +11,9 @@ import com.itko.lisa.vse.stateful.protocol.tcp.delimiters.TCPDelimiter;
 /**
  *
  */
-public class TwoByteISO8583TCPDelimiter implements TCPDelimiter{
+public class TwoByteMessageTCPDelimiter implements TCPDelimiter{
     
-    private static Logger log = Logger.getLogger(TwoByteISO8583TCPDelimiter.class);
+    private static Logger log = Logger.getLogger(TwoByteMessageTCPDelimiter.class);
 
     private int startOfNextRequest = 0;
     private int endOfRequest = -1;
@@ -47,6 +47,8 @@ public class TwoByteISO8583TCPDelimiter implements TCPDelimiter{
 
             //messageLength = calculateLength(bytes.get(0), bytes.get(1));
             messageLength = parseByteArrayToShort(sizeBytes,0);
+            
+            // Se inlcuyen los dos bytes de la longitud del mensaje
             messageLength += HEADER_LEN;
             if (!log.isDebugEnabled()) {
                 log.info("calculated message length: " + messageLength);
