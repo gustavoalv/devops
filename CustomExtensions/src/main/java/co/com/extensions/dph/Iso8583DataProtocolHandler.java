@@ -36,12 +36,16 @@ public class Iso8583DataProtocolHandler extends ParameterListDataProtocol {
 
 	protected static String HEXA_MESSAGE_NAME = "Treat as Hexa";
 	protected static String HEXA_MESSAGE_KEY = "Hexa";
+	protected static String HEADER = "0";
+	
+	protected static String BASE_24_MESSAGE_NAME = "Treat as Base24";
+	protected static String BASE_24_MESSAGE_KEY = "Base24";
+	protected static String BASE_24 = "true";
 	
 	protected static String EncodingParamDefault = Charsets.UTF_8.name();
 
 	protected static String CONFIG_XML = "C:\\Lisa7.5.2\\8583-config.xml";
 	
-	protected static String HEADER = "0";
 	
 	protected static String HEXA_MESSAGE = "true";
 
@@ -49,9 +53,10 @@ public class Iso8583DataProtocolHandler extends ParameterListDataProtocol {
 	protected ParameterList createDefaultParameters() {
 		ParameterList params = new ParameterList();
 
-		params.addParameter(new Parameter(ENCODING_PARAM_NAME, ENCODING_PARAM_KEY, EncodingParamDefault, String.class));
+//		params.addParameter(new Parameter(ENCODING_PARAM_NAME, ENCODING_PARAM_KEY, EncodingParamDefault, String.class));
 		params.addParameter(new Parameter(CONFIG_PARAM_PATH, CONFIG_PARAM_KEY, CONFIG_XML, File.class));
 		params.addParameter(new Parameter(HEADER_PARAM_NAME, HEADER_PARAM_KEY, HEADER, Integer.class));
+		params.addParameter(new Parameter(BASE_24_MESSAGE_NAME, BASE_24_MESSAGE_KEY, BASE_24, Boolean.class));
 		
 		return params;
 	}
@@ -79,9 +84,15 @@ public class Iso8583DataProtocolHandler extends ParameterListDataProtocol {
 					
 			String valueConfig = parameterList.get(CONFIG_PARAM_KEY);
 			String valueHeader = parameterList.get(HEADER_PARAM_KEY);
-			
+			String valueBase24 = parameterList.get(BASE_24_MESSAGE_KEY);
 			
 			requestPre = Converter.convertByteToHex(payloadBody);
+			
+			logger.info("Voy a tratarlo Base24" + Boolean.valueOf(valueBase24));
+			
+			if( !Boolean.valueOf(valueBase24) ){
+				requestPre = Converter.convertStringToHex(requestPre);
+			}
 			
 			logger.info("Mensaje ISO8583: " + requestPre);
 			
@@ -120,8 +131,15 @@ public class Iso8583DataProtocolHandler extends ParameterListDataProtocol {
 					
 			String valueConfig = parameterList.get(CONFIG_PARAM_KEY);
 			String valueHeader = parameterList.get(HEADER_PARAM_KEY);
+			String valueBase24 = parameterList.get(BASE_24_MESSAGE_KEY);
 			
 			responsePre = Converter.convertByteToHex(payloadBody);
+			
+			logger.info("Voy a tratarlo Base24" + Boolean.valueOf(valueBase24));
+			
+			if( !Boolean.valueOf(valueBase24) ){
+				responsePre = Converter.convertStringToHex(responsePre);
+			}
 
 			logger.info("Mensaje ISO8583 ASCII: " + payloadBody);
 			logger.info("Mensaje ISO8583  HEXA: " + responsePre);

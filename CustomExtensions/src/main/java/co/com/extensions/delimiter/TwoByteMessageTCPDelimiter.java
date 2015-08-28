@@ -46,6 +46,7 @@ public class TwoByteMessageTCPDelimiter implements TCPDelimiter{
             int messageLength = -1;
 
             //messageLength = calculateLength(bytes.get(0), bytes.get(1));
+            //Dynamic Teller messages send the size of the message on the first two bytes.
             messageLength = parseByteArrayToShort(sizeBytes,0);
             
             // Se inlcuyen los dos bytes de la longitud del mensaje

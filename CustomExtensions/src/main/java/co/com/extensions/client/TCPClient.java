@@ -24,15 +24,18 @@ public class TCPClient {
 	
 	public TCPClient() throws UnknownHostException, IOException {
 		super();
-		clientSocket = new Socket("localhost", 6002);
+		clientSocket = new Socket("localhost", 4053);
 	}
 	
 
 	public static void main(String argv[]) throws Exception {
 
-		String sentence = "42524e2d3031342d57532d32312020201c803933303030301c815353445341444d1c8230303134303031371c9131353032313903";
+//		String sentence = "42524e2d3031342d57532d32312020201c803933303030301c815353445341444d1c8230303134303031371c9131353032313903";
 		
-//		sentence = Converter.convertHexToByte(sentence);
+		String sentence = "0000160102020070380001008000801642228230081760170000500000000600003589331807410825020138373635343332310203493030333833353839333330303030303030303030303036303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303073726f6c6573652020203030303030303030303030303030303030303030303030303030303030303030303030303030435445435445535049303033383335383933333030303030303030303032303135303832352020";
+		sentence = Converter.convertHexToString(sentence);
+		
+		sentence = Converter.convertStringToHex(sentence);
 		
 		TCPClient client = new TCPClient();
 		
@@ -43,7 +46,7 @@ public class TCPClient {
 		String messageResponse = new String(response);
 		
 //		System.out.println("Message Sent: " + messageRequest);
-		System.out.println("Message Received: " + messageResponse);
+		System.out.println("Message Received: " + Converter.convertStringToHex(messageResponse));
 		
 		client.close();
 		

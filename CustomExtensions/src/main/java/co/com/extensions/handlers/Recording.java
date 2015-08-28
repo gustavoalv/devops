@@ -245,8 +245,8 @@ public class Recording {
 		Node node = e.getElementNodeByName();
 		node = node.getFirstChild();
 		String text = node.getTextContent();
-		String name = node.getNodeName();
-		String value = node.getNodeValue();
+//		String name = node.getNodeName();
+//		String value = node.getNodeValue();
 		System.out.println(text);
 //		e.inject(xmlCopybook);
 //		System.out.println(e.toString());

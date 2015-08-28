@@ -5,7 +5,10 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -19,6 +22,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import co.com.extensions.util.ElementISOWrapper;
 import co.com.extensions.util.ElementoISO8583;
 
 import com.google.common.base.Charsets;
@@ -65,7 +69,7 @@ public class ISO8583Handler {
 
 		}
 		if (trace) {
-			System.out.println("binary result is: " + binaryresult);
+//			System.out.println("binary result is: " + binaryresult);
 		}
 		
 		StringBuffer sb = new StringBuffer();
@@ -78,7 +82,7 @@ public class ISO8583Handler {
 			}
 		}
 		if (trace) {
-			System.out.println(sb.toString());
+			System.out.println("binary result is: " + sb.toString());
 		}
 		return hm;
 	}
@@ -107,15 +111,15 @@ public class ISO8583Handler {
 		}
 
 		NodeList nodeList1 = doc.getElementsByTagName("*");
-		Element currentElement1;
-		String nodetype1;
-		String nodenum1;
+//		Element currentElement1;
+//		String nodetype1;
+//		String nodenum1;
 		// String nodelength1;
-		String fieldlength1;
+//		String fieldlength1;
 //		String emvtag = null;
 		String emvpadding = "";
 		// StringBuffer rqsb = new StringBuffer();
-		HashMap<String, String> rqhm = new HashMap<String, String>();
+		/*HashMap<String, String> rqhm = new HashMap<String, String>();
 
 		// System.out.println(nodeList.getLength());
 		
@@ -136,6 +140,7 @@ public class ISO8583Handler {
 
 			}
 		}
+		*/
 
 		// process response;
 		//
@@ -270,10 +275,10 @@ public class ISO8583Handler {
 					if (currentElement.hasAttributes()) {
 						
 						ElementoISO8583 elemento = ElementoISO8583.getElemento(currentElement);
-						fieldlength = getLenthFromVariableAttribute( fieldlength, elemento);
+						fieldlength = getLenthFromVariableAttribute( elemento);
 						setValueFromElemento(direction, fieldlength,elemento);
-						
 						String hexvalue = elemento.getValue();
+						
 						sb.append(hexvalue);
 						log.info("Header: after conversion: " + hexvalue);
 					}
@@ -297,8 +302,7 @@ public class ISO8583Handler {
 						ElementoISO8583 elemento = ElementoISO8583.getElemento(currentElement);
 						if (Integer.parseInt(elemento.getNum()) <= 128) {
 							
-							fieldlength = getLenthFromVariableAttribute( fieldlength, elemento);
-							
+							fieldlength = getLenthFromVariableAttribute( elemento);
 							setValueFromElemento(direction, fieldlength,elemento);
 							
 							String valor = elemento.getValue();
@@ -389,26 +393,42 @@ public class ISO8583Handler {
 	 */
 	private static void setValueFromElemento(String direction, String fieldlength, ElementoISO8583 elemento) throws Exception {
 		
-		String nodetype = elemento.getType();
-		String nodelength = elemento.getLength();
-		String encoding = elemento.getEncoding();
-		String nodenum = elemento.getNum();
-		String nodevalue = elemento.getValue();
-		if(log.isDebugEnabled()){
-			log.debug("before conversion: " + nodevalue);
-		}
-		String valor = "";
-		if (!nodevalue.contains("{")) {
-			int templength = nodevalue.length();
-			System.out.println("value length: " + templength);
-			String finalpadding = "";
-			String padding;
+		if(elemento.hasChilds()){
+			List<ElementoISO8583> hijos = elemento.getHijos().getFields();
+			for (Iterator<ElementoISO8583> iteratorHijos = hijos.iterator(); iteratorHijos.hasNext();) {
+				ElementoISO8583 hijo = (ElementoISO8583) iteratorHijos.next();
+				setValueFromElemento(direction, fieldlength , hijo);
+			}
+		} else {
+		
+			String nodetype = elemento.getType();
+			String nodelength = elemento.getLength();
+			String nodevalue = elemento.getValue();
 			
-			if (nodelength != null && nodelength.length() > 0 ) {
+			if(log.isDebugEnabled()){
+				log.debug("before conversion: " + nodevalue);
+			}
+			String valor = "";
+			if (!nodevalue.contains("{")) {
+				int templength = nodevalue.length();
+				System.out.println("value length: " + templength);
+				String finalpadding = "";
+				String padding;
 				
-				int mylength = Integer.parseInt(nodelength);
-				
-				if(!nodetype.contains("BIN")){
+				if (nodetype.contains("LVAR")){
+					
+					valor = fieldlength + nodevalue;
+					
+				} else if (nodetype.contains("LBIN")){
+					
+					valor = fieldlength + Converter.convertStringToHex(nodevalue);
+					
+				}else if (nodelength != null && nodelength.length() > 0 ) {
+					
+					// Es un valor de tipo ALPHA, DATE, NUMERIC o BINARY
+					
+					int mylength = Integer.parseInt(nodelength);
+					
 					if (templength < mylength) {
 						if (nodetype.equals("NUMERIC")) {
 							padding = "0";
@@ -419,46 +439,20 @@ public class ISO8583Handler {
 							finalpadding += padding;
 						}
 					}
-				}
-				
-				if(nodetype.equals("BINARY")){
 					
-					valor = CustomExtensionsHandler.convertHexToString(nodevalue);
+					if(nodetype.contains("BINARY")) {
+						nodevalue = CustomExtensionsHandler.convertStringToHex(nodevalue);
+					}
 					
-				} else if (nodetype.contains("BIN") || (nodetype.contains("VAR"))){
-					
-					if(nodetype.contains("BIN")) {
-						
-						nodevalue = CustomExtensionsHandler.convertHexToString(nodevalue);
-						
-					} else if ((encoding != null) && (!encoding.equals(""))) {
-
-						byte[] bites = nodevalue.getBytes(encoding);
-						nodevalue = new String(bites);
-					} 
-					
-					valor = fieldlength + finalpadding + nodevalue;
+					valor = finalpadding + nodevalue;
 					
 					if (direction.equals("right")) {
-						
-						valor = fieldlength +  nodevalue + finalpadding;
-						
+						valor = nodevalue + finalpadding;
 					} 
 					
-				} else{
-					
-					if ((encoding != null) && (!encoding.equals(""))) {
-
-						byte[] bites = nodevalue.getBytes(encoding);
-						nodevalue = new String(bites);
-
-					}
-					valor = finalpadding +nodevalue;
 				}
-
+				
 				elemento.setValue(valor);
-			} else {
-				System.out.println("line is skipped: " + nodenum);
 			}
 		}
 	}
@@ -569,61 +563,94 @@ public class ISO8583Handler {
 	 * @param elemento
 	 * @return
 	 */
-	private static String getLenthFromVariableAttribute(String fieldlength, ElementoISO8583 elemento) {
-		String nodelength;
-		String nodenum = elemento.getNum();
-		String nodetype = elemento.getType();
-		String nodevalue = elemento.getValue();
+	private static String getLenthFromVariableAttribute( ElementoISO8583 elemento) {
 		
-		if (nodetype.contains("LVAR") && !nodenum.equals("123")) {	
-			nodelength = String.valueOf(nodevalue.length());
-			if (nodetype.contains("LLLVAR")) {
-				int t = nodelength.length();
-				String pad = "";
-				if (t != 3) {
-					for (int c = 0; c < 3 - t; c++) {
-						pad += "0";
-					}
-				}
-				fieldlength = pad + nodelength;
-			} else if (nodetype.contains("LLVAR")) {
-				int t = nodelength.length();
-				String pad = "";
-				if (t != 2) {
-					for (int c = 0; c < 2 - t; c++) {
-						pad += "0";
-					}
-				}
-				fieldlength = pad + nodelength;
-			} else {
-				fieldlength = String
-						.valueOf(nodevalue.length());
-			}
-		} else if (nodetype.contains("LLBIN")) {
-			nodelength = String.valueOf(nodevalue.length() / 2);
-			if (nodetype.contains("LLLBIN")) {
-				int t = nodelength.length();
-				String pad = "";
-				if (t != 3) {
-					for (int c = 0; c < 3 - t; c++) {
-						pad += "0";
-					}
-				}
-				fieldlength = pad + nodelength;
-			} else if (nodetype.contains("LLBIN")) {
-				int t = nodelength.length();
-				
-				String hexa = Converter.convertIntToHex(Integer.parseInt(nodelength));
-				String pad = "";
-				if (hexa.length() != 2) {
-					for (int c = 0; c < 2 - t; c++) {
-						pad += "0";
-					}
-				}
-				fieldlength = pad + hexa;
+		String fieldlength = null;
+		
+		if(elemento.hasChilds()){
+			List<ElementoISO8583> hijos = elemento.getHijos().getFields();
+			for (Iterator<ElementoISO8583> iteratorHijos = hijos.iterator(); iteratorHijos.hasNext();) {
+				ElementoISO8583 hijo = (ElementoISO8583) iteratorHijos.next();
+				return getLenthFromVariableAttribute(hijo);
 			}
 		} else {
-			fieldlength = elemento.getLength();
+			String nodelength;
+			String nodenum = elemento.getNum();
+			String nodetype = elemento.getType();
+			String nodevalue = elemento.getValue();
+			
+			if (nodetype.contains("LVAR") && !nodenum.equals("123")) {
+				nodelength = String.valueOf(nodevalue.length());
+				if (nodetype.contains("LLLLVAR")) {
+					int t = nodelength.length();
+					String pad = "";
+					if (t != 4) {
+						for (int c = 0; c < 4 - t; c++) {
+							pad += "0";
+						}
+					}
+					fieldlength = pad + nodelength;
+				} else if (nodetype.contains("LLLVAR")) {
+					int t = nodelength.length();
+					String pad = "";
+					if (t != 3) {
+						for (int c = 0; c < 3 - t; c++) {
+							pad += "0";
+						}
+					}
+					fieldlength = pad + nodelength;
+				} else if (nodetype.contains("LLVAR")) {
+					int t = nodelength.length();
+					String pad = "";
+					if (t != 2) {
+						for (int c = 0; c < 2 - t; c++) {
+							pad += "0";
+						}
+					}
+					fieldlength = pad + nodelength;
+				} else {
+					fieldlength = String
+							.valueOf(nodevalue.length());
+				}
+			} else if (nodetype.contains("LBIN")) {
+				nodelength = String.valueOf(nodevalue.length());
+				
+				if (nodetype.contains("LLLLBIN")) {
+					int t = nodelength.length();
+					String pad = "";
+					if (t != 4) {
+						for (int c = 0; c < 4 - t; c++) {
+							pad += "0";
+						}
+					}
+					fieldlength = pad + nodelength;
+				} else if (nodetype.contains("LLLBIN")) {
+					int t = nodelength.length();
+					String pad = "";
+					if (t != 3) {
+						for (int c = 0; c < 3 - t; c++) {
+							pad += "0";
+						}
+					}
+					fieldlength = pad + nodelength;
+				} else if (nodetype.contains("LLBIN")) {
+					
+					int t = nodelength.length();
+					String pad = "";
+					if (t != 2) {
+						for (int c = 0; c < 2 - t; c++) {
+							pad += "0";
+						}
+					}
+					fieldlength = pad + nodelength;
+					
+				} else {
+					fieldlength = String
+							.valueOf(nodevalue.length());
+				}
+			} else {
+				fieldlength = elemento.getLength();
+			}
 		}
 		return fieldlength;
 	}
@@ -637,14 +664,14 @@ public class ISO8583Handler {
 	 * @return
 	 */
 	private static String ISO8583ParserHex(String configfile, Object o, int header, boolean isBinary) throws Exception{
+		
 		System.out.println("Begin to parse ISO message...");
 		String hexbody = null;
 		int bitmapLength = 0;
 		int msgtypeLength = 0;
-		int factor = 0;
+		
 		bitmapLength = 32;
 		msgtypeLength = 8;
-		factor = 2;
 		if (isBinary) {
 			hexbody = CustomExtensionsHandler.convertByteToHex((byte[]) o);
 		} else {
@@ -731,133 +758,50 @@ public class ISO8583Handler {
 		hexbody = hexbody.substring(msgtypeLength + bitmapLength,
 				hexbody.length());
 		System.out.println("fieldstring is: " + hexbody);
-		System.out.println("i am using the parser as: "
-				+ tempe.getAttribute("mti"));
+		System.out.println("i am using the parser as: " + tempe.getAttribute("mti"));
 		System.out.println("c my name is: " + tempe.getNodeName());
-		System.out.println("c how many childs I have: "
-				+ tempe.getChildNodes().getLength());
+		System.out.println("c how many childs I have: " + tempe.getChildNodes().getLength());
 		// System.out.println(nodeToString(tempe));
-		Element childtemp = null;
 		
-		if (tempe!= null)
-		{
-			int fieldstart = 0;
-			NodeList nodes = tempe.getChildNodes();
-			for (int i = 0; i < nodes.getLength(); i++) {
-				if (nodes.item(i).getNodeType() == Node.ELEMENT_NODE) {
-					childtemp = (Element) nodes.item(i);
-					System.out.println(childtemp.getNodeName());
-					String tagname = childtemp.getAttribute("name").replaceAll(" ", "_");
-					String tagnum = childtemp.getAttribute("num");
-					String tagtype = childtemp.getAttribute("type");
-					String taglength = childtemp.getAttribute("length");
-					String tagEncoding = childtemp.getAttribute("encoding");
-					
-					String tagvalue = null;
-					System.out.println("mytagname is: " + tagname + ", mytagnum is: " + tagnum + ", mytype is:" + tagtype + ", mylength is: " + taglength + ", start point is: " + fieldstart + ", got match lines? " + hm.containsKey(tagnum));
-
-					String encoding = Charset.defaultCharset().displayName();
-					
-					if (hm.containsKey(tagnum)) {
-						
-						if ((tagEncoding != null) && (!tagEncoding.equals(""))) {
-							
-							encoding = tagEncoding;
-						}
-						
-						if (taglength != null && taglength.length() > 0 && !tagtype.equals("BINARY")) {
-							
-							tagvalue = CustomExtensionsHandler.convertHexToString(hexbody.substring(fieldstart,fieldstart + Integer.parseInt(taglength) * factor),encoding);
-							fieldstart += Integer.parseInt(taglength) * factor;
-
-						} else {
-//							String LLlength = null;
-
-							if (tagtype.equals("LBIN")) {
-
-//								LLlength = CustomExtensionsHandler.convertHexToString(hexbody.substring(fieldstart, fieldstart + 2));
-								int fieldlength = Integer.parseInt(CustomExtensionsHandler.convertHexToString(hexbody.substring(fieldstart,fieldstart + 2))) * factor;
-								taglength = String .valueOf(fieldlength / 2);
-								System.out.println("LLBIN length is: " + fieldlength);
-								tagvalue = hexbody.substring(fieldstart + 2, fieldstart + 2 + fieldlength);
-								fieldstart += 2 + fieldlength;
-
-							} else if (tagtype.equals("LLBIN")) {
-
-//								LLlength = CustomExtensionsHandler.convertHexToString(hexbody.substring(fieldstart, fieldstart + 4));
-								int fieldlength = Integer.parseInt(CustomExtensionsHandler.convertHexToString(hexbody.substring(fieldstart,fieldstart + 4))) * factor;
-								taglength = String .valueOf(fieldlength / 2);
-								System.out.println("LLBIN length is: " + fieldlength);
-								tagvalue = hexbody.substring(fieldstart + 4, fieldstart + 4 + fieldlength);
-								fieldstart += 4 + fieldlength;
-
-							} else if (tagtype.equals("LLLBIN")) {
-
-//								LLlength = CustomExtensionsHandler.convertHexToString(hexbody.substring(fieldstart, fieldstart + 6));
-								int fieldlength = Integer.parseInt(CustomExtensionsHandler.convertHexToString(hexbody.substring(fieldstart,fieldstart + 6))) * factor;
-								taglength = String .valueOf(fieldlength / 2);
-								System.out.println("LLLBIN length is: " + fieldlength);
-								tagvalue = hexbody.substring(fieldstart + 6, fieldstart + 6 + fieldlength);
-								fieldstart += 6 + fieldlength;
-
-							}else if (tagtype.equals("LVAR")) {
-								
-//								LLlength = CustomExtensionsHandler.convertHexToString(hexbody.substring(fieldstart, fieldstart + 2));
-								
-								int fieldlength = Integer.parseInt(CustomExtensionsHandler.convertHexToString(hexbody.substring(fieldstart,fieldstart + 2)))* factor;
-								taglength = String.valueOf(fieldlength / factor);
-								System.out.println("LVAR length is: "+ fieldlength);
-								tagvalue = CustomExtensionsHandler.convertHexToString(hexbody.substring(fieldstart + 2, fieldstart + 2 + fieldlength), encoding);
-								fieldstart += 2 + fieldlength;
-								
-							} else if (tagtype.equals("LLVAR")) {
-								
-//								LLlength = CustomExtensionsHandler.convertHexToString(hexbody.substring(fieldstart, fieldstart + 4));
-								int fieldlength = Integer.parseInt(CustomExtensionsHandler.convertHexToString(hexbody.substring(fieldstart,fieldstart + 4)))* factor;
-								taglength = String.valueOf(fieldlength / factor);
-								System.out.println("LLVAR length is: "+ fieldlength);
-								tagvalue = CustomExtensionsHandler.convertHexToString(hexbody.substring(fieldstart + 4, fieldstart + 4 + fieldlength), encoding);
-								fieldstart += 4 + fieldlength;
-								
-							} else if (tagtype.equals("LLLVAR")) {
-								
-//								LLlength = CustomExtensionsHandler.convertHexToString(hexbody.substring(fieldstart, fieldstart + 6));
-								int fieldlength = Integer.parseInt(CustomExtensionsHandler.convertHexToString(hexbody.substring(fieldstart,fieldstart + 6))) * factor;
-								taglength = String .valueOf(fieldlength / factor);
-								System.out.println("LLLVAR length is: " + fieldlength);
-								tagvalue = CustomExtensionsHandler.convertHexToString(hexbody.substring(fieldstart + 6, fieldstart + 6 + fieldlength), encoding);
-								fieldstart += 6 + fieldlength;
-								
-							} else if (tagtype.equals("BITMAP")) {
-
-								tagvalue = CustomExtensionsHandler.convertHexToString(hexbody.substring( fieldstart, fieldstart + 32));
-								int fieldlength = tagvalue.length() * factor;
-								taglength = String.valueOf(fieldlength);
-								System.out.println("BITMAP length is: " + fieldlength / factor);
-								fieldstart += fieldlength;
-
-							} else if (tagtype.equals("BINARY")) {
-								
-								int fieldlength = Integer.parseInt(taglength) * 2;
-								System.out.println(hexbody.substring( fieldstart, fieldstart + fieldlength));
-								tagvalue = hexbody.substring(fieldstart, fieldstart + fieldlength);
-								// tagvalue =
-								// convertHexToString(hexbody.substring(fieldstart,fieldstart+fieldlength));
-								fieldstart += fieldlength;
-							}
-						}
-						System.out.println("tagvalue " + i + ": " + tagvalue);
-						Element childnode = finaldoc.createElement(tagname);
-						childnode.setAttribute("num", tagnum);
-						childnode.setAttribute("length", taglength);
-//						childnode.setAttribute("fieldlength", LLlength);
-						childnode.setAttribute("mytype", tagtype);
-						childnode.setTextContent(tagvalue);
-						bodyElement.appendChild(childnode);
-					}
-				}
-			}
+		List<ElementoISO8583> elementos = new ArrayList<ElementoISO8583>();
+		
+		if (tempe!= null) {
+			checkChildNodes(hexbody, tempe, hm, elementos);
 		}
+		
+		for (Iterator<ElementoISO8583> iterator = elementos.iterator(); iterator.hasNext();) {
+			ElementoISO8583 elementoISO8583 = (ElementoISO8583) iterator.next();
+			
+			
+			Element childnode = finaldoc.createElement(elementoISO8583.getName());
+			childnode.setAttribute("length", elementoISO8583.getLength());
+			childnode.setAttribute("num", elementoISO8583.getNum());
+			childnode.setAttribute("type", elementoISO8583.getType());
+			
+			if(elementoISO8583.hasChilds())
+			{
+			
+				List<ElementoISO8583> hijos = elementoISO8583.getHijos().getFields();
+				for (Iterator<ElementoISO8583> iteratorHijos = hijos.iterator(); iteratorHijos.hasNext();) {
+					ElementoISO8583 hijo = (ElementoISO8583) iteratorHijos.next();
+					
+					Element childnodeHijo = finaldoc.createElement(hijo.getName());
+					childnodeHijo.setAttribute("length", hijo.getLength());
+					childnodeHijo.setAttribute("num", hijo.getNum());
+					childnodeHijo.setAttribute("type", hijo.getType());
+					childnodeHijo.setTextContent(hijo.getValue());
+					childnode.appendChild(childnodeHijo);
+					
+				}
+			} else {
+				
+				childnode.setTextContent(elementoISO8583.getValue());
+			}
+			
+			bodyElement.appendChild(childnode);
+			
+		}
+		
 		
 		if((myheader != null) && (!myheader.equals(""))){ 
 		
@@ -880,6 +824,8 @@ public class ISO8583Handler {
 				}
 			}
 			
+			Element childtemp = null;
+			int factor = 2;
 			NodeList nodes = tempe.getChildNodes();
 			for (int i = 0; i < nodes.getLength(); i++) {
 				if (nodes.item(i).getNodeType() == Node.ELEMENT_NODE) {
@@ -906,9 +852,9 @@ public class ISO8583Handler {
 					
 					if (tagtype.equals("BINARY")) {
 						
-						int fieldlength = Integer.parseInt(taglength) * 2;
-						System.out.println(myheader.substring( fieldstart, fieldstart + fieldlength));
-						tagvalue = myheader.substring(fieldstart, fieldstart + fieldlength);
+						int fieldlength = Integer.parseInt(taglength) * 4;
+//						System.out.println(myheader.substring( fieldstart, fieldstart + fieldlength));
+						tagvalue = CustomExtensionsHandler.convertHexToString(myheader.substring(fieldstart, fieldstart + fieldlength));
 						
 						fieldstart += fieldlength;
 					} else {
@@ -920,8 +866,9 @@ public class ISO8583Handler {
 					Element childnode = finaldoc.createElement(tagname);
 					childnode.setAttribute("num", tagnum);
 					childnode.setAttribute("length", taglength);
-					childnode.setAttribute("mytype", tagtype);
+					childnode.setAttribute("type", tagtype);
 					childnode.setTextContent(tagvalue);
+					System.out.println("tagvalue" + tagvalue);
 					
 					if((taginclude != null) && (!taginclude.equals("")))
 					{
@@ -944,6 +891,194 @@ public class ISO8583Handler {
 		resultnl = finaldoc.getElementsByTagName("Message");
 
 		return CustomExtensionsHandler.nodeListToString(resultnl);
+	}
+
+	/**
+	 * @param hexbody
+	 * @param tempe
+	 * @param hm
+	 * @param elementos
+	 * @throws Exception
+	 */
+	private static void checkChildNodes(String hexbody, Element tempe, HashMap<String, String> hm, List<ElementoISO8583> elementos) throws Exception {
+		NodeList nodes = tempe.getChildNodes();
+		Element childtemp = null;
+		int factor = 2;
+		int fieldstart = 0;
+		
+		for (int i = 0; i < nodes.getLength(); i++) {
+			
+			if (nodes.item(i).getNodeType() == Node.ELEMENT_NODE) {
+				childtemp = (Element) nodes.item(i);
+				
+				if ((hm == null) || (hm.containsKey(childtemp.getAttribute("num")))) {
+					
+//						System.out.println("Got match lines? " + hm.containsKey(tagnum));
+					
+					System.out.println(childtemp.getNodeName());
+					String tagname = childtemp.getAttribute("name").replaceAll(" ", "_");
+					String tagnum = childtemp.getAttribute("num");
+					String tagtype = childtemp.getAttribute("type");
+					String taglength = childtemp.getAttribute("length");
+					
+					System.out.println("***** FIELD " + tagnum + "*****");
+					System.out.println("Tag Num is: " + tagnum);
+					System.out.println("Tag Name is: " + tagname);
+					System.out.println("Tag Type is:" + tagtype);
+					System.out.println("Tag length is: " + taglength);
+					System.out.println("Start Point is: " + fieldstart);
+					
+					ElementoISO8583 elemento = new ElementoISO8583();
+					elemento.setLength(taglength);
+					elemento.setName(tagname);
+					elemento.setNum(tagnum);
+					elemento.setType(tagtype);
+					if(childtemp.hasChildNodes()){
+						
+						ElementISOWrapper elementISOWrapper = new ElementISOWrapper();
+						elementISOWrapper.setFields(new ArrayList<ElementoISO8583>());
+						
+						elemento.setHijos(elementISOWrapper);
+					}
+					
+					fieldstart = processMessage(hexbody, factor, fieldstart, elemento);
+					
+					elementos.add(elemento);
+					
+					boolean hasChildNodes = childtemp.hasChildNodes();
+					if(hasChildNodes){
+						List<ElementoISO8583> elementosHijos = new ArrayList<ElementoISO8583>();
+						checkChildNodes(Converter.convertStringToHex(elemento.getValue()),childtemp, null, elementosHijos);
+						ElementISOWrapper elementISOWrapper = new ElementISOWrapper();
+						elementISOWrapper.setFields(elementosHijos);
+						elemento.setHijos(elementISOWrapper);
+					}
+					
+				}
+				
+				
+			}
+		}
+	}
+
+	/**
+	 * @param hexbody
+	 * @param factor
+	 * @param fieldstart
+	 * @param elemento
+	 * @return
+	 * @throws Exception
+	 */
+	private static int processMessage(String hexbody, int factor,
+			int fieldstart, ElementoISO8583 elemento) throws Exception {
+		String tagvalue = null;
+		
+		String encoding = Charset.defaultCharset().displayName();
+		
+		if (elemento.getLength() != null && elemento.getLength().length() > 0 && !elemento.getType().equals("BINARY")) {
+			
+			tagvalue = CustomExtensionsHandler.convertHexToString(hexbody.substring(fieldstart,fieldstart + Integer.parseInt(elemento.getLength()) * factor),encoding);
+			fieldstart += Integer.parseInt(elemento.getLength()) * factor;
+
+		} else {
+
+			if (elemento.getType().equals("LBIN")) {
+
+				int fieldlength = Integer.parseInt(CustomExtensionsHandler.convertHexToString(hexbody.substring(fieldstart,fieldstart + 2))) * factor * 2;
+				elemento.setLength(String .valueOf((fieldlength / factor)/2));
+				System.out.println("LLBIN length is: " + fieldlength);
+				tagvalue = hexbody.substring(fieldstart + 2, fieldstart + 2 + fieldlength);
+				tagvalue = CustomExtensionsHandler.convertHexToString(tagvalue);
+				tagvalue = CustomExtensionsHandler.convertHexToString(tagvalue);
+				fieldstart += 2 + fieldlength;
+
+			} else if (elemento.getType().equals("LLBIN")) {
+
+				int fieldlength = Integer.parseInt(CustomExtensionsHandler.convertHexToString(hexbody.substring(fieldstart,fieldstart + 4))) * factor * 2;
+				elemento.setLength(String .valueOf((fieldlength / factor)/2));
+				System.out.println("LLBIN length is: " + fieldlength);
+				tagvalue = hexbody.substring(fieldstart + 4, fieldstart + 4 + fieldlength);
+				tagvalue = CustomExtensionsHandler.convertHexToString(tagvalue);
+				tagvalue = CustomExtensionsHandler.convertHexToString(tagvalue);
+				fieldstart += 4 + fieldlength;
+
+			} else if (elemento.getType().equals("LLLBIN")) {
+
+				int fieldlength = Integer.parseInt(CustomExtensionsHandler.convertHexToString(hexbody.substring(fieldstart,fieldstart + 6))) * factor * 2;
+				elemento.setLength(String .valueOf((fieldlength / factor)/2));
+				System.out.println("LLLBIN length is: " + fieldlength);
+				tagvalue = hexbody.substring(fieldstart + 6, fieldstart + 6 + fieldlength);
+				tagvalue = CustomExtensionsHandler.convertHexToString(tagvalue);
+				tagvalue = CustomExtensionsHandler.convertHexToString(tagvalue);
+				fieldstart += 6 + fieldlength;
+
+			}else if (elemento.getType().equals("LLLLBIN")) {
+				
+				int fieldlength = Integer.parseInt(CustomExtensionsHandler.convertHexToString(hexbody.substring(fieldstart,fieldstart + 8))) * factor * 2;
+				elemento.setLength(String .valueOf((fieldlength / factor)/2));
+				System.out.println("LLLLBIN length is: " + elemento.getLength());
+				tagvalue = hexbody.substring(fieldstart + 8, fieldstart + 8 + fieldlength);
+				tagvalue = CustomExtensionsHandler.convertHexToString(tagvalue);
+				tagvalue = CustomExtensionsHandler.convertHexToString(tagvalue);
+				fieldstart += 8 + fieldlength;
+				
+			} else if (elemento.getType().equals("LVAR")) {
+				
+				int fieldlength = Integer.parseInt(CustomExtensionsHandler.convertHexToString(hexbody.substring(fieldstart,fieldstart + 2)))* factor;
+				elemento.setLength(String.valueOf(fieldlength / factor));
+				System.out.println("LVAR length is: "+ fieldlength);
+				tagvalue = CustomExtensionsHandler.convertHexToString(hexbody.substring(fieldstart + 2, fieldstart + 2 + fieldlength), encoding);
+				fieldstart += 2 + fieldlength;
+				
+			} else if (elemento.getType().equals("LLVAR")) {
+				
+//								LLlength = CustomExtensionsHandler.convertHexToString(hexbody.substring(fieldstart, fieldstart + 4));
+				int fieldlength = Integer.parseInt(CustomExtensionsHandler.convertHexToString(hexbody.substring(fieldstart,fieldstart + 4)))* factor;
+				elemento.setLength(String.valueOf(fieldlength / factor));
+				System.out.println("LLVAR length is: "+ elemento.getLength());
+				tagvalue = CustomExtensionsHandler.convertHexToString(hexbody.substring(fieldstart + 4, fieldstart + 4 + fieldlength), encoding);
+				fieldstart += 4 + fieldlength;
+				
+			} else if (elemento.getType().equals("LLLVAR")) {
+				
+				int fieldlength = Integer.parseInt(CustomExtensionsHandler.convertHexToString(hexbody.substring(fieldstart,fieldstart + 6))) * factor;
+				elemento.setLength(String .valueOf(fieldlength / factor));
+				System.out.println("LLLVAR length is: " + elemento.getLength());
+				tagvalue = CustomExtensionsHandler.convertHexToString(hexbody.substring(fieldstart + 6, fieldstart + 6 + fieldlength), encoding);
+				fieldstart += 6 + fieldlength;
+				
+			} else if (elemento.getType().equals("LLLLVAR")) {
+				
+				int fieldlength = Integer.parseInt(CustomExtensionsHandler.convertHexToString(hexbody.substring(fieldstart,fieldstart + 8))) * factor;
+				elemento.setLength(String .valueOf(fieldlength / factor));
+				System.out.println("LLLVAR length is: " + elemento.getLength());
+				tagvalue = CustomExtensionsHandler.convertHexToString(hexbody.substring(fieldstart + 8, fieldstart + 8 + fieldlength), encoding);
+				fieldstart += 8 + fieldlength;
+				
+			} else if (elemento.getType().equals("BITMAP")) {
+
+				tagvalue = CustomExtensionsHandler.convertHexToString(hexbody.substring( fieldstart, fieldstart + 32));
+				int fieldlength = tagvalue.length() * factor;
+				elemento.setLength(String.valueOf(fieldlength));
+				System.out.println("BITMAP length is: " + fieldlength / factor);
+				fieldstart += fieldlength;
+
+			} else if (elemento.getType().equals("BINARY")) {
+				
+				int fieldlength = Integer.parseInt(elemento.getLength()) * factor * 2;
+				System.out.println("BINARY length is: " + fieldlength / factor);
+				tagvalue = hexbody.substring(fieldstart, fieldstart + fieldlength);
+				tagvalue = CustomExtensionsHandler.convertHexToString(tagvalue);
+				tagvalue = CustomExtensionsHandler.convertHexToString(tagvalue);
+				fieldstart += fieldlength;
+			}
+		}
+		
+		System.out.println("Tag Value " + elemento.getNum() + ": " + tagvalue);
+		System.out.println("***** FIELD *****");
+		
+		elemento.setValue(tagvalue);
+		return fieldstart;
 	}
 
 	/**
@@ -1059,6 +1194,7 @@ public class ISO8583Handler {
 					String tagtype = childtemp.getAttribute("type");
 					String taglength = childtemp.getAttribute("length");
 					String tagEncoding = childtemp.getAttribute("encoding");
+					String classe = childtemp.getAttribute("class");
 
 					System.out.println("tagEncoding: " + tagEncoding);
 
@@ -1130,9 +1266,12 @@ public class ISO8583Handler {
 								int fieldlength = longitudDec * factor;
 
 								taglength = String.valueOf(fieldlength/ factor);
-								System.out.println("LLVAR length is: "+ fieldlength);
+								System.out.println("LLBIN length is: "+ fieldlength);
 
 								tagvalue = hexbody.substring(fieldstart + 2, fieldstart + 2+ fieldlength);
+								
+								tagvalue = processBinaryField(classe, tagvalue);
+								
 								fieldstart += 2 + fieldlength;
 
 							} else if (tagtype.equals("LLLVAR")) {
@@ -1183,6 +1322,20 @@ public class ISO8583Handler {
 			e.printStackTrace();
 		}
 		return CustomExtensionsHandler.nodeListToString(resultnl);
+	}
+
+	/**
+	 * @param classe
+	 * @param tagvalue
+	 * @return
+	 * @throws Exception
+	 */
+	private static String processBinaryField(String classe, String tagvalue)
+			throws Exception {
+		if(classe != null && classe.equals("HEXA")){
+			tagvalue = Converter.convertHexToString(tagvalue);
+		}
+		return tagvalue;
 	}
 
 	/**
@@ -1260,4 +1413,113 @@ public class ISO8583Handler {
 		return sb.toString() + result;
 	}
 
+	
+	private String stringHex(String trama) {
+        StringBuilder stb = new StringBuilder();
+        for (int i = 0; i < trama.length(); i += 2) {
+            String str = trama.substring(i, i + 2);
+            int val = Integer.parseInt(str, 16);
+
+            stb.append((char)val);
+        }
+        return stb.toString();
+    }
+    
+    
+    public static void main(String args[]) throws Exception{
+        ISO8583Handler x = new ISO8583Handler();
+        String message = "0000160102020070380001008000801642228230081760170000500000000600003589331807410825020138373635343332310203493030333833353839333330303030303030303030303036303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303073726f6c6573652020203030303030303030303030303030303030303030303030303030303030303030303030303030435445435445535049303033383335383933333030303030303030303032303135303832352020";
+        System.out.println("Result0:-" + message.length());
+        String result = x.stringHex("02006024340100800200164027483000034040000055354656000000000000000002013837363534333231000153");
+        result = x.stringHex(message);
+        System.out.println("Result1:-" + result);
+        
+        result = "0000160102020070380001008000801642228230081760170000500000000600003589331807410825020138373635343332310203493030333833353839333330303030303030303030303036303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303073726f6c6573652020203030303030303030303030303030303030303030303030303030303030303030303030303030435445435445535049303033383335383933333030303030303030303032303135303832352020";
+        System.out.println("Result:-" + result);
+        
+//        Byte b1 = new Byte(Converter.convertHexToInt(character));
+        
+        byte[] b4 = Converter.convertHexToByte(result);
+        
+        int j = 0;
+        byte [] bytes = new byte [result.length()/2];
+        for(int i = 0 ;  i < result.length(); i=i+2 ){
+        	j=i+2;
+        	String character = result.substring(i, j);
+        	int value = Converter.convertHexToInt(character);
+        	byte b2 = (byte)value;
+        	
+        	Byte b = new Byte(b2);
+        	int k = i/2;
+        	System.out.println(k);
+        	bytes[k] = b.byteValue();
+//        	System.out.println(character);
+        }
+        
+        String value = new String (bytes);
+        System.out.println(value);
+        
+        String value4 = new String (b4);
+        System.out.println(value4);
+        
+        
+        
+        
+        String result1 = Converter.convertHexToString(result);
+        System.out.println("Result1:-" + result1);
+        
+        
+        String result4 = x.stringHex(result);
+        System.out.println("Result:-" + result4);
+        
+        
+        String result2 = x.stringHex(result);
+        System.out.println("Result:-" + result2);
+        System.out.println(Converter.convertStringToHex(result));
+        
+//        String result1 = x.hexString(result.getBytes());
+//        System.out.println("Result1:-" + result1);
+//        String result2 = Converter.convertHexToString(result);
+//        System.out.println("Result1:-" + result2);
+        
+        System.out.println("Result1:-" + message);
+        
+        String msgLength = Converter.convertIntToHex(result.length());
+        
+        while(msgLength.length()%4 != 0){
+			msgLength = "0" + msgLength;
+		}
+        
+        System.out.println("msgLength:-" + msgLength);
+        
+        String response = msgLength + message;
+        response = Converter.convertHexToString(response);
+        System.out.println("Response: -" + response);
+        
+        
+        String result3 = x.hexString(result.getBytes());
+        System.out.println("Result2:-" + result3);
+        
+        
+        System.out.println("FIN");
+    }
+
+    public static String hexString(byte[] b) {
+        String[] hexStrings = new String[256];
+        for (int i = 0; i < 256; i++) {
+            StringBuilder d = new StringBuilder(2);
+            char ch = Character.forDigit(((byte)i >> 4) & 0x0F, 16);
+            d.append(Character.toUpperCase(ch));
+            ch = Character.forDigit((byte)i & 0x0F, 16);
+            d.append(Character.toUpperCase(ch));
+            hexStrings[i] = d.toString();
+        }
+        StringBuilder d = new StringBuilder(b.length * 2);
+        for (byte aB : b) {
+            d.append(hexStrings[(int)aB & 0xFF]);
+        }
+        return d.toString();
+    }
+
+    
 }
