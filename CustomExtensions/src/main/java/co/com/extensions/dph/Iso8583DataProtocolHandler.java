@@ -44,7 +44,7 @@ public class Iso8583DataProtocolHandler extends ParameterListDataProtocol {
 	
 	protected static String EncodingParamDefault = Charsets.UTF_8.name();
 
-	protected static String CONFIG_XML = "C:\\Lisa7.5.2\\8583-config.xml";
+	protected static String CONFIG_XML = "";
 	
 	
 	protected static String HEXA_MESSAGE = "true";
@@ -167,7 +167,6 @@ public class Iso8583DataProtocolHandler extends ParameterListDataProtocol {
 			xmlISO8583 = testExec.parseInState(xmlISO8583); 
 			
 			logger.info("Message ISO Parser: " + xmlISO8583);
-			
 			
 			Object o = ISO8583Handler.ISO8583XmlToObject(xmlISO8583, "left", false, false);
 			

@@ -26,7 +26,7 @@ public class TCPServer {
 	
 	public TCPServer() throws IOException {
 		super();
-		welcomeSocket = new ServerSocket(8002);
+		welcomeSocket = new ServerSocket(8004);
 	}
 
 	public static void main(String argv[]) throws Exception {
@@ -44,19 +44,25 @@ public class TCPServer {
 				
 				System.out.println("Message Received Server: " + message);
 				
-				String sentence = "0210B23880012E92801800000000100000050130000000020000000728145358020246095351072807281110000000190375188410034062772=160720110000283000000190000190990363190001900001        2520000020000000003755235340120000000000001700120190CER1+0000130013TES1    P1110000000013798& 0000900798! P000036 000000000000000000000000000000000000! QT00032 0130000190000190990000007100000 ! B200158 7FF90000808000048000319D5C7EE14A9C790000020000000000000000003900014417017015072801757AFF1000180110A00003220000000000000000000000FF0000000000000000000000000000! B300080 CF00DBD00004604000200000000000001400024201000007A0000000041010000000000000000000! B400020 05151000000000    4 ! B500038 0010040AF623F057CE100012000000000000NN! B600260                              ! BJ00082                                                      5503715100000000";
+				String sentence = "@18F6KX@AVJLA0002 MANUTENCAO OKÓ@DCJLM0O3  PALTERAGRP 0000010002JLA0001MANUTENCAO OK                                                           Ó";
+				
+				String hexaSentence= "7CF1F8C6F6D2E77CC1E5D1D3C1F0F0F0F140D4C1D5E4E3C5D5C3C1D640D6D2EE7CC4C3D1D3D4F0D6F34040F7C1D3E3C5D9C1C7D9D740F0F0F0F0F0F1F0F0F0F2D1D3C1F0F0F0F1D4C1D5E4E3C5D5C3C1D640D6D24040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040404040EEFF";
+//				String sentence = "ISO0160000550210B23880012E92801800000000100000058900000000000000000911152037021908102035091109111110000000190374912680034041945=151222610000860000000190000533226362040001900005        2520000000000000234314540000120000000000001700120190CER1+0000130013TES1    P1110000000013798& 0000900798! P000036 000000000000000000000000000000000000! QT00032 0110000190000533220000003965000 ! B200158                                                                                                                                                               ! B300080                                                                                 ! B400020 051                 ! B500038                                       ! B600260                                                                                                                                                                                                                                                                     ! BJ00082                                                                                   9A78776E00000000";
 				
 //				String sentence = "42524e2d3031342d57532d32312020201c803933303030301c81205353445341444d1c8231343030313720201cae301cb0303403";
 				
 				
-				sentence = Converter.convertStringToHex(sentence);
+				sentence = Converter.convertStringToHex(sentence, "cp500");
+				
+				System.out.println(sentence);
+				System.out.println(hexaSentence);
 				
 //				sentence = Converter.convertHexToString(sentence);
 //				
 //				String response = server.prepareMessage(sentence);
 				
 //				server.sendBytes(response.getBytes());
-				server.sendBytes(Converter.convertHexToByte(sentence));
+				server.sendBytes(Converter.convertHexToByte(hexaSentence));
 				
 				
 			} else {

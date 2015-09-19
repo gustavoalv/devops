@@ -16,7 +16,7 @@ import org.w3c.dom.NodeList;
  * @author alvgu02
  *
  */
-public class ElementoISO8583 extends NodeISO8583{
+public class ElementoISO8583 {
 
 	
 	private static Logger log = Logger.getLogger(ElementoISO8583.class);

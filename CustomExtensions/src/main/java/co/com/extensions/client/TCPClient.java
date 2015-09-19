@@ -24,7 +24,7 @@ public class TCPClient {
 	
 	public TCPClient() throws UnknownHostException, IOException {
 		super();
-		clientSocket = new Socket("localhost", 4053);
+		clientSocket = new Socket("localhost", 8003);
 	}
 	
 
@@ -32,10 +32,10 @@ public class TCPClient {
 
 //		String sentence = "42524e2d3031342d57532d32312020201c803933303030301c815353445341444d1c8230303134303031371c9131353032313903";
 		
-		String sentence = "0000160102020070380001008000801642228230081760170000500000000600003589331807410825020138373635343332310203493030333833353839333330303030303030303030303036303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303030303073726f6c6573652020203030303030303030303030303030303030303030303030303030303030303030303030303030435445435445535049303033383335383933333030303030303030303032303135303832352020";
-		sentence = Converter.convertHexToString(sentence);
+		String sentence = "    NXCARDP JLO301311NUO  1O00N2ALTERAGRP 0000010002                                                                               ";
+//		sentence = Converter.convertHexToString(sentence);
 		
-		sentence = Converter.convertStringToHex(sentence);
+		sentence = Converter.convertStringToHex(sentence, "cp500");
 		
 		TCPClient client = new TCPClient();
 		
@@ -45,39 +45,17 @@ public class TCPClient {
 		byte[] response = client.readBytes();
 		String messageResponse = new String(response);
 		
-//		System.out.println("Message Sent: " + messageRequest);
-		System.out.println("Message Received: " + Converter.convertStringToHex(messageResponse));
+		System.out.println("Message Received: " + messageResponse);
+		System.out.println("Message Received HEXA BYTE: " + Converter.convertByteToHex(response));
+		
+		System.out.println("Message Received: " + messageResponse);
+		System.out.println("Message Received HEXA: " + Converter.convertStringToHex(messageResponse));
+		System.out.println("Message Received HEXA CP500: " + Converter.convertStringToHex(messageResponse,"cp500"));
 		
 		client.close();
 		
 	}
 
-	/**
-	 * @param sentence
-	 * @return
-	 * @throws Exception
-	 */
-	private String prepareMessage(String sentence) throws Exception {
-		String hexData = Converter.convertStringToHex(sentence) + "03";
-		
-		int largo = hexData.length()/2;
-		
-		String longitud = Converter.convertIntToHex(largo);
-
-		if(longitud.length()%2 != 0){
-			longitud = "0" + longitud;
-		}
-		
-		if(longitud.length() == 2){
-			longitud = "00" + longitud; 
-		}
-		
-		String resultHex = longitud + hexData;
-		
-		String messageRequest =Converter.convertHexToString(hexData);
-		return messageRequest;
-	}
-	
 	/**
 	 * 
 	 * @throws IOException
@@ -112,6 +90,7 @@ public class TCPClient {
 	    // Again, probably better to store these objects references in the support class
 	    InputStream in = clientSocket.getInputStream();
 	    DataInputStream dis = new DataInputStream(in);
+	    //TODO OJO LEE LOS DOS PRIMEROS BYTES
 	    int len = dis.readShort();
 //	    int len = 20;
 	    byte[] data = new byte[len];
