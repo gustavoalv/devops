@@ -67,6 +67,10 @@ public class TwoByteMessageDataProtocolHandler extends ParameterListDataProtocol
 		logger.info("Request payloadBody.length " + payloadBody.length);
 		logger.info("Request payloadBody.hexa " + Converter.convertByteToHex(payloadBody));
 		
+		logger.info("Request messageByte.hexa " + Converter.convertByteToHex(messageByte));
+		logger.info("Request messageByte.ASCII " + new String(messageByte));
+		
+		request.setBinary(true);
 		request.setBody(messageByte);
 		
 		} catch (Exception e) {
@@ -102,6 +106,9 @@ public class TwoByteMessageDataProtocolHandler extends ParameterListDataProtocol
 			
 			logger.info("Two Byte Response messageByte.length " + messageByte.length);
 			logger.info("Two Byte Response payloadBody.length " + payloadBody.length);
+			
+			logger.info("Request messageByte.hexa " + Converter.convertByteToHex(messageByte));
+			logger.info("Request messageByte.ASCII " + new String(messageByte));
 			
 			response.setBinary(true);
 			response.setBody(messageByte);
@@ -167,6 +174,7 @@ public class TwoByteMessageDataProtocolHandler extends ParameterListDataProtocol
 			logger.info("Mensaje: " + new String(responseByte, "cp500"));
 			logger.info("Mensaje HEXA CP500: " + Converter.convertByteToHex(responseByte));
 			
+			response.setBinary(true);
 			response.setBody(responseByte);
 			
 
