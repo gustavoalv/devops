@@ -4,8 +4,9 @@
 #  Delimiters   #
 #################
 #tcpProtocolDelimiters=co.com.bancobogota.delimiter.MultipayBSVDelimiter,com.bancobogota.delimiter.AutraTCPDelimiter,co.com.bancobogota.delimiter.CoordinadorTCPDelimiter,co.com.bancobogota.delimiter.DebuggerTCPDelimiter,co.com.banco#bogota.delimiter.BanescoTCPDelimiter,co.com.bancobogota.delimiter.TwoByteMessageTCPDelimiter,co.com.bancobogota.delimiter.HexaCharacterFromFileDelimiter
-tcpProtocolDelimiters=co.com.extensions.delimiter.TwoByteMessageTCPDelimiter
-co.com.extensions.delimiter.TwoByteMessageTCPDelimiter=TwoByteMessageTCPDelimiter Two Bytes, true, true,false
+tcpProtocolDelimiters=co.com.extensions.delimiter.TwoByteMessageTCPDelimiter,co.com.extensions.delimiter.TwoByteMessageTCPDelimiterNoInclude
+co.com.extensions.delimiter.TwoByteMessageTCPDelimiter=Two Bytes Delimiter, true, true,false
+co.com.extensions.delimiter.TwoByteMessageTCPDelimiterNoInclude=Two Bytes Delimiter No Include, true, true, false
 
 
 #co.com.bancobogota.delimiter.HexaCharacterFromFileDelimiter= FF Hexa Delimitador, true, true, false
@@ -22,8 +23,8 @@ co.com.extensions.delimiter.TwoByteMessageTCPDelimiter=TwoByteMessageTCPDelimite
 ###################
 #  Data Protocols #
 ###################
-#vseProtocols=co.com.extensions.dph.paxus.PaxusDataProtocol,co.com.extensions.dph.PS9DataProtocol,co.com.extensions.dph.Iso8583DataProtocolHandler
-vseProtocols=co.com.extensions.dph.Iso8583DataProtocolHandler,co.com.extensions.dph.TwoByteMessageDataProtocolHandler,co.com.extensions.dph.PS7DataProtocol
+vseProtocols=co.com.extensions.dph.paxus.PaxusDataProtocol
+#vseProtocols=co.com.extensions.dph.Iso8583DataProtocolHandler,co.com.extensions.dph.TwoByteMessageDataProtocolHandler,co.com.extensions.dph.PS7DataProtocol
 #com.itko.lisa.ext.iso8583.vse.dph.SVSDataProtocolHandler=data:req:resp,SVS ISO 8583 Message Converter,Convert ISO 8583 messages to and from XML
 
 
@@ -33,7 +34,7 @@ vseProtocols=co.com.extensions.dph.Iso8583DataProtocolHandler,co.com.extensions.
 ###################################
 #co.com.extensions.dph.PS9DataProtocol=data:req:resp,PS9 Data Protocol,Convert PS9 BBVA Format to XML and vice-versa. It manages COPY and BMS embedded messages.
 
-co.com.extensions.dph.Iso8583DataProtocolHandler=data:req:resp,Message Converter ISO8583 Colpatria,Este DPH permite manejar ISO8583.
-co.com.extensions.dph.TwoByteMessageDataProtocolHandler=data:req:resp,TwoByte Message Handler in TCP, Remove/Add (Reqeust/Response)Two Byte Message Lentgh
-co.com.extensions.dph.PS7DataProtocol=data:resp,PS7 Data Protocol, PS7 <-> XML
-
+co.com.extensions.dph.Iso8583DataProtocolHandler=data:req:resp,Message Converter ISO8583 ,Este DPH permite manejar ISO8583.
+co.com.extensions.dph.TwoByteMessageDataProtocolHandler=data:req:resp,TwoByte Message Handler in TCP, Remove/Add (Request/Response)Two Byte Message Lentgh
+co.com.extensions.dph.PS7DataProtocol=data:req:resp,PS7 Data Protocol, PS7 <-> XML
+co.com.extensions.dph.paxus.PaxusDataProtocol=data:req:resp,Paxus Data Protocol, Paxus <-> XML

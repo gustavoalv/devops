@@ -35,9 +35,11 @@ import co.com.extensions.util.ElementPS9;
 
 import com.itko.citi.Converter;
 import com.itko.lisa.test.TestExec;
+import com.itko.lisa.vse.stateful.model.Request;
 import com.itko.lisa.vse.stateful.model.Response;
 import com.itko.lisa.vse.stateful.model.TransientResponse;
 import com.itko.lisa.vse.stateful.protocol.copybook.CopybookDataProtocol;
+import com.itko.lisa.vse.stateful.protocol.copybook.CopybookDataProtocolConfiguration;
 import com.itko.util.Parameter;
 import com.itko.util.ParameterList;
 import com.itko.util.XMLUtils;
@@ -83,214 +85,25 @@ public class PS7DataProtocol extends CopybookDataProtocol {
 	private static String BMS_CONFIG_FILE_NAME = "bms-config.xml";
 	
 	
+	
     /* (non-Javadoc)
 	 * @see com.itko.lisa.vse.stateful.protocol.copybook.CopybookDataProtocol#updateRequest(com.itko.lisa.test.TestExec, com.itko.lisa.vse.stateful.model.Request)
 	 */
-	/*
-	@Override
-	public void updateRequest(TestExec testExec, Request request) {
 		
-		try{
-			
-			this.createXMLDocument(REQUEST_KEY);
-			Node rootElement = finaldoc.getFirstChild();
+	public PS7DataProtocol() {
+		CopybookDataProtocolConfiguration config = new CopybookDataProtocolConfiguration();
+		config.setEncodingUnparsed("cp500");
+		setConfig(config);
+		log.info("public PS7DataProtocol()");
 		
-			String requestMessage = this.buildXMLRequest(request.getBodyAsString());
-			
-			List<String> elements = new ArrayList<String>();
-			
-			Map<String, List<ElementPS9>> data = getListElementsXMLString(request.getBodyAsString());
-			
-			Iterator<Entry<String, List<ElementPS9>>> it = data.entrySet().iterator();
-			while (it.hasNext()){
-				Entry<String, List<ElementPS9>> pair = it.next();
-				String elemento = pair.getKey();
-				elements.add(elemento);
-				log.debug("Se agrego el elemento: " + elemento);
-			}
-			
-	    	// Asume que viene un XML bien formado
-//	        Recording rec = new Recording(requestMessage);
-//			List<String> elements = rec.getListElements();
-	        
-	        for (String element : elements) {
-	        	
-				log.debug("El elemento que vamos a trabajar es: " + element);
-//				CopybookDataProtocol dph =  new CopybookDataProtocol(this.getConfig());
-				
-//				rec.setElementName(element);
-//				String copybook = rec.extract();
-				List<ElementPS9> elementPS9s = data.get(element);
-				
-				for (ElementPS9 elementPS9 : elementPS9s) {
-				
-					String copybook = elementPS9.getContent();
-					
-					ParameterList metaData = request.getMetaData();
-					metaData.removeParameter(TAG_KEY);
-					
-					Parameter p = null;
-					String xmlCopybook = null;
-					
-					if(element.equalsIgnoreCase(IH_TAG)){
-						
-						request.setBody(copybook);
-						p = new Parameter(TAG_KEY,element);
-						metaData.addParameter(p);
-						
-						log.debug("Debe buscar el según el tag: " + request.getMetaData().get(TAG_KEY));
-						log.debug("Debe va a convertir el texto: ->" + request.getBodyAsString() + "<-");
-						log.debug("Preparando a procesar CopyBook");
-						
-						super.updateRequest(testExec, request);
-						xmlCopybook = request.getBodyAsString();
-						
-						for (int i = 0; i < request.getArguments().size(); i++) {
-							Parameter arg = request.getArguments().get(i);
-							log.debug("Name: " + arg.getName() + "Value: " + arg.getValue());
-						}
-						
-						log.debug("CopyBook Procesado IH: ");
-						log.debug(xmlCopybook);
-						
-						xmlCopybook = this.trimXMLString(xmlCopybook);
-						
-						Recording recCopy = new Recording(xmlCopybook);
-						Document doc = recCopy.getDoc();
-						Element rootCopy = doc.getDocumentElement();
-						
-						
-						Element firstChild = (Element)rootCopy.getFirstChild();
-						log.debug("firstChild.getNodeName() IH: " + firstChild.getNodeName());
-						
-						Node nodeImported = finaldoc.importNode(rootCopy.getFirstChild(), true);
-						
-						rootElement.appendChild(nodeImported);
-						
-					} else {
-						
-						String copyLength = copybook.substring(0, 4);
-						String copyType = copybook.substring(4, 5);
-						String message = copybook.substring(5);
-						
-						log.debug("copyType: " + copyType);
-						
-						StringBuffer buffer = new StringBuffer();
-						buffer.append(ROOT_ELEMENT);
-						buffer.append("<" + ME_TAG + ">");
-						buffer.append("<" + ME_COPY_LENGTH_ELEMENT + ">" + copyLength + "</" + ME_COPY_LENGTH_ELEMENT + ">");
-						buffer.append("<" + ME_COPY_TYPE_ELEMENT + ">" + copyType + "</" + ME_COPY_TYPE_ELEMENT + ">");
-						buffer.append("</" + ME_TAG + ">");
-						
-						log.debug("XML ME INICIAL: " + buffer);
-						
-						Recording me = new Recording(buffer.toString());
-						Document docMe = me.getDoc();
-						Element rootME = docMe.getDocumentElement();
-						
-						copybook = message;
-						
-						String formato = request.getArguments().get(IH_HEADER_TX_CODE);
-						
-						
-						Node nodeImported = null;
-						
-						if(copyType.equalsIgnoreCase(COPY_VALUE)){
-							
-							request.setBody(copybook);
-							p = new Parameter(TAG_KEY,formato);
-							metaData.addParameter(p);
-							
-							log.debug("Debe buscar el según el tag: " + request.getMetaData().get(TAG_KEY));
-							log.debug("Debe va a convertir el texto: ->" + request.getBodyAsString() + "<-");
-							log.debug("Preparando a procesar CopyBook");
-							
-							super.updateRequest(testExec, request);
-							xmlCopybook = request.getBodyAsString();
-							
-							log.debug("CopyBook Procesado: ");
-							log.debug(xmlCopybook);
-							
-							xmlCopybook = trimXMLString(xmlCopybook);
-							
-							Recording recCopy = new Recording(xmlCopybook);
-							Document doc = recCopy.getDoc();
-							Element rootCopy = doc.getDocumentElement();
-							
-							Element firstChild = (Element)rootCopy.getFirstChild();
-							log.debug("firstChild.getNodeName() COPY: " + firstChild.getNodeName());
-							
-							nodeImported = docMe.importNode(rootCopy.getFirstChild(), true);
-							
-						} else if(copyType.equalsIgnoreCase(BMS_VALUE)){
-							
-							String pathFile = this.getConfig().getCopybookFileDefinitionFolderParsed(testExec);
-							
-							log.debug("getFileDefinitionMapPathParsed: ");
-							log.debug(pathFile);
-							
-							String configfile = pathFile + "\\" + BMS_CONFIG_FILE_NAME;
-							
-							String hexaMessage = Converter.convertStringToHex(copybook);
-							
-							byte[] dataByteAscii;
-							String resultXML = null;
-							try {
-								dataByteAscii = Converter.convertHexToByte(hexaMessage);
-								resultXML = BMSHandler.BMSParser(configfile, dataByteAscii, formato, true, CustomExtensionsHandler.CONTENT_TYPE_HEXA, CustomExtensionsHandler.TYPE_MESSAGE_REQUEST);
-							} catch (Exception e) {
-								log.fatal("Error convirtiendo el mensaja de HEX to ASCII");
-							}
-							
-							Recording recCopy = null;
-							if(resultXML != null){
-								
-								recCopy = new Recording(resultXML);
-								
-							} else {
-								
-								StringBuffer unknowMessage =  new StringBuffer();
-								unknowMessage.append(ROOT_ELEMENT);
-								unknowMessage.append("<" + BMSHandler.BMS_UNKNOW_ROOT_ELEMENT+ ">");
-								unknowMessage.append(hexaMessage);
-								unknowMessage.append("</" + BMSHandler.BMS_UNKNOW_ROOT_ELEMENT+ ">");
-								resultXML = unknowMessage.toString();
-								recCopy = new Recording(unknowMessage.toString());
-								
-							}
-							
-							
-							log.debug("BMS Procesado: ");
-							log.debug(resultXML);
-							
-							Document doc = recCopy.getDoc();
-							Element rootCopy = doc.getDocumentElement();
-							
-							nodeImported = docMe.importNode(rootCopy, true);
-							
-							
-						}
-						rootME.appendChild(nodeImported);
-						Node rootMEImported = finaldoc.importNode(rootME, true);
-						
-						rootElement.appendChild(rootMEImported);
-					}
-					
-		        }
-			}
-	        
-	        String xmlDocument = this.getXMLDocument();
-			log.debug("xmlDocument getXMLDocument= " + xmlDocument);
-			request.getArguments().clear();
-	        request.setBody(xmlDocument);
-	        
-		}catch (Exception e){
-			log.fatal(e.getMessage(), e);
-			log.fatal("El mensaje no va a ser procesado: ->" + request.getBodyAsString() + "<-");
-		}
+	}
+
+	public PS7DataProtocol(CopybookDataProtocolConfiguration config) {
+		super(config);
+		log.info("public PS7DataProtocol(CopybookDataProtocolConfiguration config)");
 	}
 	
-	*/
+	
 
 	private String trimXMLString(String xmlCopybook) {
 		String [] elements = xmlCopybook.split("\n");
@@ -308,6 +121,12 @@ public class PS7DataProtocol extends CopybookDataProtocol {
 		
 		return buffer.toString();
 	}
+	
+	@Override
+	public void updateRequest(TestExec testExec, Request request) {
+		super.updateRequest(testExec, request);
+	}
+	
 
 	/**
      * Extract copybook payload during recording
@@ -329,13 +148,25 @@ public class PS7DataProtocol extends CopybookDataProtocol {
     		
     		log.info("PS7 public void updateResponse(TestExec testExec, Response response) ");
     		
-    		String responsetMessage = new String(payloadBody, "cp500");
+    		CopybookDataProtocolConfiguration config = this.getConfig();
+			String encoding = config.getEncodingParsed(testExec);
+			String encodingUnparsed = config.getEncodingUnparsed();
+    		
+			encoding = "cp500";
+    		String responsetMessage = new String(payloadBody, encoding);
     		
     		log.info("PS7 response.getBodyAsString(): " + responsetMessage);
     		
     		log.info("PS7 Response responsetMessage.hexa " + Converter.convertStringToHex(responsetMessage));
     		
 			log.info(new String());
+			
+			
+			
+			log.info("encoding: " + encoding);
+			log.info("encodingUnparsed: " + encodingUnparsed);
+			
+			
     				
 			this.createXMLDocument(RESPONSE_KEY);
 			
@@ -447,7 +278,13 @@ public class PS7DataProtocol extends CopybookDataProtocol {
 						
 						if(copyType.equalsIgnoreCase(COPY_VALUE)){
 							
-							response.setBody(copybookMessage);
+							
+							//TODO convirtiendo a IBM500
+							byte[] messageBytes500 = copybookMessage.getBytes(encoding);
+							
+							response.setBody(messageBytes500);
+							response.setBinary(true);
+							
 							p = new Parameter(TAG_KEY,copyName);
 							metaData.addParameter(p);
 							
@@ -595,6 +432,7 @@ public class PS7DataProtocol extends CopybookDataProtocol {
 			log.debug("xmlDocument getXMLDocument= " + xmlDocument);
 	        response.setBody(xmlDocument);
 	        
+	        
     	} catch (Exception e) {
 			log.fatal(e);
 			e.printStackTrace();
@@ -732,6 +570,9 @@ public class PS7DataProtocol extends CopybookDataProtocol {
     	
     		log.debug("public void updateResponse(TestExec testExec, TransientResponse response)");
     		
+    		CopybookDataProtocolConfiguration config = super.getConfig();
+			String encoding = config.getEncodingParsed(testExec);
+    		
 	    	String xmlResponse = new String (response.getBodyAsByteArray());
 	    	xmlResponse = testExec.parseInState(xmlResponse);
 			
@@ -777,7 +618,7 @@ public class PS7DataProtocol extends CopybookDataProtocol {
 						StringBuffer bufferBMS = updateResponseDC(child, testExec, response);
 						buffer.append(bufferBMS);
 						
-						buffer.append(Converter.convertHexToString("EE", "cp500"));
+						buffer.append(Converter.convertHexToString("EE", encoding));
 						
 				        log.info("Mensaje Respuesta DC_TAG = " + bufferBMS.toString());
 				        
@@ -791,7 +632,7 @@ public class PS7DataProtocol extends CopybookDataProtocol {
 						
 						buffer.append(nodeContent);
 						
-						buffer.append(Converter.convertHexToString("EE", "cp500"));
+						buffer.append(Converter.convertHexToString("EE", encoding));
 						
 						break;
 	
@@ -815,9 +656,9 @@ public class PS7DataProtocol extends CopybookDataProtocol {
 					}
 				}
 	        }
-	        buffer.append(Converter.convertHexToString("FF", "cp500"));
+	        buffer.append(Converter.convertHexToString("FF", encoding));
 	        
-	        String valor = Converter.convertStringToHex(buffer.toString(), "cp500");
+	        String valor = Converter.convertStringToHex(buffer.toString(), encoding);
 	        
 	        byte[] bytes = Converter.convertHexToByte(valor);
 	        

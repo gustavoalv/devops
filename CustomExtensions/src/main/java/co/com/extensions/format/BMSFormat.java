@@ -3,13 +3,16 @@
  */
 package co.com.extensions.format;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import co.com.extensions.handlers.BMSHandler;
 import co.com.extensions.handlers.CustomExtensionsHandler;
+import co.com.extensions.util.ElementPS9;
 
 import com.itko.citi.Converter;
 
@@ -26,6 +29,7 @@ public class BMSFormat {
 		String configfile = "E:\\ApplicationDelivery\\CA_Service_Virtualization\\Projects\\DevTest\\Projects\\Bancomer_Mexico_Project_00\\Data\\CICS\\copybook\\bms-config.xml";
 		
 
+		
 		// Conversion HEX a ISO8583 - Request
 		{
  

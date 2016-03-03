@@ -109,7 +109,13 @@
 			<version>8.0</version>
 		</dependency>
 	</dependencies>
-		<properties>
+	<repositories>
+           <repository>
+              <id>alvgu02-releases</id>
+              <url>https://github.com/gustavoalv/sv-maven-repo</url>
+       </repository>
+    </repositories>
+	<properties>
 		<maven.compiler.source>1.7</maven.compiler.source>
 		<maven.compiler.target>1.7</maven.compiler.target>
 	</properties>
