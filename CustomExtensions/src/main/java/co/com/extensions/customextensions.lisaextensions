@@ -23,8 +23,8 @@ co.com.extensions.delimiter.TwoByteMessageTCPDelimiterNoInclude=Two Bytes Delimi
 ###################
 #  Data Protocols #
 ###################
-vseProtocols=co.com.extensions.dph.paxus.PaxusDataProtocol
-#vseProtocols=co.com.extensions.dph.Iso8583DataProtocolHandler,co.com.extensions.dph.TwoByteMessageDataProtocolHandler,co.com.extensions.dph.PS7DataProtocol
+#vseProtocols=co.com.extensions.dph.paxus.PaxusDataProtocol
+vseProtocols=co.com.extensions.dph.Iso8583DataProtocolHandler,co.com.extensions.dph.TwoByteMessageDataProtocolHandler,co.com.extensions.dph.PS7DataProtocol
 #com.itko.lisa.ext.iso8583.vse.dph.SVSDataProtocolHandler=data:req:resp,SVS ISO 8583 Message Converter,Convert ISO 8583 messages to and from XML
 
 

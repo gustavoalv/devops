@@ -52,6 +52,21 @@ public class ElementoISO8583 {
 	 */
 	private String classe;
 	
+	/**
+	 * 
+	 */
+	private Boolean includeLength = Boolean.FALSE;
+	
+	/**
+	 * 
+	 */
+	private Boolean detailed = Boolean.FALSE;
+	
+	/**
+	 * 
+	 */
+	private Boolean last = Boolean.FALSE;
+	
 
 	/**
 	 * @return the num
@@ -122,6 +137,20 @@ public class ElementoISO8583 {
 	 */
 	public void setName(String name) {
 		this.name = name;
+	}
+	
+	/**
+	 * @return the last
+	 */
+	public Boolean getLast() {
+		return last;
+	}
+
+	/**
+	 * @param last the last to set
+	 */
+	public void setLast(Boolean last) {
+		this.last = last;
 	}
 
 	/**
@@ -203,6 +232,36 @@ public class ElementoISO8583 {
 	 */
 	public void setClasse(String classe) {
 		this.classe = classe;
+	}
+	
+	
+
+	/**
+	 * @return the includeLength
+	 */
+	public Boolean getIncludeLength() {
+		return includeLength;
+	}
+
+	/**
+	 * @param includeLength the includeLength to set
+	 */
+	public void setIncludeLength(Boolean includeLength) {
+		this.includeLength = includeLength;
+	}
+
+	/**
+	 * @return the detailed
+	 */
+	public Boolean getDetailed() {
+		return detailed;
+	}
+
+	/**
+	 * @param detailed the detailed to set
+	 */
+	public void setDetailed(Boolean detailed) {
+		this.detailed = detailed;
 	}
 
 	/**

@@ -679,6 +679,14 @@ public class ISO8583Handler {
 			childnode.setAttribute("num", elementoISO8583.getNum());
 			childnode.setAttribute("type", elementoISO8583.getType());
 			
+			if(elementoISO8583.getIncludeLength()){
+				childnode.setAttribute("includeLength", elementoISO8583.getIncludeLength().toString());
+			}
+			
+			if(elementoISO8583.getDetailed()){
+				childnode.setAttribute("detailed", elementoISO8583.getDetailed().toString());
+			}
+			
 			if(elementoISO8583.hasChilds())
 			{
 			
@@ -822,14 +830,33 @@ public class ISO8583Handler {
 					String tagtype = childtemp.getAttribute("type");
 					String taglength = childtemp.getAttribute("length");
 					
+					boolean hasChildNodes = childtemp.hasChildNodes();
+					Boolean includeLength = Boolean.valueOf(childtemp.getAttribute("includeLength"));
+					Boolean detailed = Boolean.valueOf(childtemp.getAttribute("detailed"));
+					Boolean last = Boolean.valueOf(childtemp.getAttribute("last"));
+					
 					System.out.println("***** FIELD " + tagnum + "*****");
 					System.out.println("Tag Num is: " + tagnum);
 					System.out.println("Tag Name is: " + tagname);
 					System.out.println("Tag Type is:" + tagtype);
 					System.out.println("Tag length is: " + taglength);
 					System.out.println("Start Point is: " + fieldstart);
+					System.out.println("Last Field: " + last);
 					
 					ElementoISO8583 elemento = new ElementoISO8583();
+					
+					if(includeLength != null){
+						elemento.setIncludeLength(includeLength);
+					}
+					
+					if(detailed != null){
+						elemento.setDetailed(detailed);
+					}
+					
+					if(last != null){
+						elemento.setLast(last);
+					}
+					
 					elemento.setLength(taglength);
 					elemento.setName(tagname);
 					elemento.setNum(tagnum);
@@ -846,7 +873,7 @@ public class ISO8583Handler {
 					
 					elementos.add(elemento);
 					
-					boolean hasChildNodes = childtemp.hasChildNodes();
+					System.out.println("Has Child Nodes: " + hasChildNodes);
 					if(hasChildNodes){
 						List<ElementoISO8583> elementosHijos = new ArrayList<ElementoISO8583>();
 						checkChildNodes(Converter.convertStringToHex(elemento.getValue()),childtemp, null, elementosHijos);
@@ -928,16 +955,25 @@ public class ISO8583Handler {
 				int fieldlength = Integer.parseInt(CustomExtensionsHandler.convertHexToString(hexbody.substring(fieldstart,fieldstart + 2)))* factor;
 				elemento.setLength(String.valueOf(fieldlength / factor));
 				System.out.println("LVAR length is: "+ fieldlength);
-				tagvalue = CustomExtensionsHandler.convertHexToString(hexbody.substring(fieldstart + 2, fieldstart + 2 + fieldlength), encoding);
+				if(elemento.getIncludeLength()){
+					tagvalue = CustomExtensionsHandler.convertHexToString(hexbody.substring(fieldstart + 2, fieldstart + fieldlength), encoding);
+				} else if(elemento.getLast() ){
+					tagvalue = CustomExtensionsHandler.convertHexToString(hexbody.substring(fieldstart, fieldstart + 2 + fieldlength), encoding);
+				} else {
+					tagvalue = CustomExtensionsHandler.convertHexToString(hexbody.substring(fieldstart + 2, fieldstart + 2 + fieldlength), encoding);
+				}
 				fieldstart += 2 + fieldlength;
 				
 			} else if (elemento.getType().equals("LLVAR")) {
 				
-//								LLlength = CustomExtensionsHandler.convertHexToString(hexbody.substring(fieldstart, fieldstart + 4));
 				int fieldlength = Integer.parseInt(CustomExtensionsHandler.convertHexToString(hexbody.substring(fieldstart,fieldstart + 4)))* factor;
 				elemento.setLength(String.valueOf(fieldlength / factor));
 				System.out.println("LLVAR length is: "+ elemento.getLength());
-				tagvalue = CustomExtensionsHandler.convertHexToString(hexbody.substring(fieldstart + 4, fieldstart + 4 + fieldlength), encoding);
+				if(elemento.getIncludeLength()){
+					tagvalue = CustomExtensionsHandler.convertHexToString(hexbody.substring(fieldstart + 4, fieldstart + fieldlength), encoding);
+				} else {
+					tagvalue = CustomExtensionsHandler.convertHexToString(hexbody.substring(fieldstart + 4, fieldstart + 4 + fieldlength), encoding);
+				}
 				fieldstart += 4 + fieldlength;
 				
 			} else if (elemento.getType().equals("LLLVAR")) {
@@ -945,15 +981,30 @@ public class ISO8583Handler {
 				int fieldlength = Integer.parseInt(CustomExtensionsHandler.convertHexToString(hexbody.substring(fieldstart,fieldstart + 6))) * factor;
 				elemento.setLength(String .valueOf(fieldlength / factor));
 				System.out.println("LLLVAR length is: " + elemento.getLength());
-				tagvalue = CustomExtensionsHandler.convertHexToString(hexbody.substring(fieldstart + 6, fieldstart + 6 + fieldlength), encoding);
-				fieldstart += 6 + fieldlength;
+				
+				if(elemento.getLast() ){
+					tagvalue = CustomExtensionsHandler.convertHexToString(hexbody.substring(fieldstart + 6), encoding);
+				} else {
+					
+					if(elemento.getIncludeLength()){
+						tagvalue = CustomExtensionsHandler.convertHexToString(hexbody.substring(fieldstart + 6, fieldstart + fieldlength), encoding);
+						fieldstart += fieldlength;
+					} else {
+						tagvalue = CustomExtensionsHandler.convertHexToString(hexbody.substring(fieldstart + 6, fieldstart + 6 + fieldlength), encoding);
+						fieldstart += 6 + fieldlength;
+					}
+				}
 				
 			} else if (elemento.getType().equals("LLLLVAR")) {
 				
 				int fieldlength = Integer.parseInt(CustomExtensionsHandler.convertHexToString(hexbody.substring(fieldstart,fieldstart + 8))) * factor;
 				elemento.setLength(String .valueOf(fieldlength / factor));
 				System.out.println("LLLVAR length is: " + elemento.getLength());
-				tagvalue = CustomExtensionsHandler.convertHexToString(hexbody.substring(fieldstart + 8, fieldstart + 8 + fieldlength), encoding);
+				if(elemento.getIncludeLength()){
+					tagvalue = CustomExtensionsHandler.convertHexToString(hexbody.substring(fieldstart + 8, fieldstart + fieldlength), encoding);
+				} else {
+					tagvalue = CustomExtensionsHandler.convertHexToString(hexbody.substring(fieldstart + 8, fieldstart + 8 + fieldlength), encoding);
+				}
 				fieldstart += 8 + fieldlength;
 				
 			} else if (elemento.getType().equals("BITMAP")) {

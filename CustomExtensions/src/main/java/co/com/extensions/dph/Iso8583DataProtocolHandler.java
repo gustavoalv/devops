@@ -10,7 +10,11 @@ import co.com.extensions.handlers.ISO8583Handler;
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
 import com.itko.citi.Converter;
+import com.itko.lisa.test.TestDefException;
 import com.itko.lisa.test.TestExec;
+import com.itko.lisa.test.TestRunException;
+import com.itko.lisa.vse.ExecutionMode;
+import com.itko.lisa.vse.stateful.VSRouterStep;
 import com.itko.lisa.vse.stateful.model.Request;
 import com.itko.lisa.vse.stateful.model.Response;
 import com.itko.lisa.vse.stateful.model.TransientResponse;
@@ -63,11 +67,39 @@ public class Iso8583DataProtocolHandler extends ParameterListDataProtocol {
 
 	@Override
 	public void updateRequest(TestExec testExec, Request request) {
-		updateRequest(request);
+		
+		if(checkProcessMessage(testExec))
+		{
+			updateRequest(request);
+		}
+	}
+
+	/**
+	 * @param testExec
+	 * @param request
+	 */
+	private boolean checkProcessMessage(TestExec testExec) {
+		ExecutionMode executimode;
+		try {
+			boolean processMessage = false;
+			executimode = VSRouterStep.determineExecutionMode(testExec);
+			if(ExecutionMode.EFFICIENT == executimode){
+				processMessage = true;
+			}
+			
+			return processMessage;
+		} catch (TestDefException e) {
+			logger.error(e.getMessage(), e);
+			throw new RuntimeException(e.getMessage(), e);
+		} catch (TestRunException e) {
+			logger.error(e.getMessage(), e);
+			throw new RuntimeException(e.getMessage(), e);
+		}
 	}
 
 	@Override
 	public void updateRequest(Request request) {
+		
 		
 		boolean isBinary = request.isBinary();
 		byte[] payloadBody;
@@ -77,6 +109,7 @@ public class Iso8583DataProtocolHandler extends ParameterListDataProtocol {
 			} else {
 				payloadBody = request.getBodyAsString().getBytes(getEncoding());
 			}
+			
 			
 			ParameterList parameterList = this.getParameterList();
 
@@ -102,7 +135,6 @@ public class Iso8583DataProtocolHandler extends ParameterListDataProtocol {
 			
 			request.setBinary(false);
 			request.setBody(message);
-			
 			
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
@@ -162,28 +194,36 @@ public class Iso8583DataProtocolHandler extends ParameterListDataProtocol {
 	 */
 	@Override
 	public void updateResponse(TestExec testExec, TransientResponse response) {
-		try {
-			String xmlISO8583 = new String (response.getBodyAsByteArray());
-			xmlISO8583 = testExec.parseInState(xmlISO8583); 
-			
-			logger.info("Message ISO Parser: " + xmlISO8583);
-			
-			Object o = ISO8583Handler.ISO8583XmlToObject(xmlISO8583, "left", false, false);
-			
-			String result = (String) o;
-			byte[] respuesta = result.getBytes();
-			
-			logger.info("Mensaje ISO8583 ASCII: " + new String(result));
-			logger.info("Mensaje ISO8583  HEXA: " + CustomExtensionsHandler.convertByteToHex(respuesta));
+		
+		if(checkProcessMessage(testExec))
+		{
+			try {
+				String xmlISO8583 = new String (response.getBodyAsByteArray());
+				xmlISO8583 = testExec.parseInState(xmlISO8583); 
 				
-			response.setBinary(true);
-			response.setBody(respuesta);
+				logger.info("Message ISO Parser: " + xmlISO8583);
+				
+				Object o = ISO8583Handler.ISO8583XmlToObject(xmlISO8583, "left", false, false);
+				
+				String result = (String) o;
+				byte[] respuesta = result.getBytes();
+				
+				logger.info("Mensaje ISO8583 ASCII: " + new String(result));
+				logger.info("Mensaje ISO8583  HEXA: " + CustomExtensionsHandler.convertByteToHex(respuesta));
+					
+				response.setBinary(true);
+				response.setBody(respuesta);
 
-		} catch (Exception e) {
-			logger.info(e.getMessage(), e);
-			throw new RuntimeException(e.getMessage(), e);
+			} catch (Exception e) {
+				logger.info(e.getMessage(), e);
+				throw new RuntimeException(e.getMessage(), e);
+			}
+		} 
+		
+		else {
+			logger.info("No se proceso el mensaje de la imagen");
 		}
-
+		
 	}
 
 	/**
