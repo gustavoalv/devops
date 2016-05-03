@@ -112,11 +112,11 @@
 	<repositories>
            <repository>
               <id>alvgu02-releases</id>
-              <url>https://github.com/gustavoalv/sv-maven-repo</url>
+              <url>https://github.com/gustavoalv/maven_repo/raw/master</url>
        </repository>
     </repositories>
 	<properties>
-		<maven.compiler.source>1.8</maven.compiler.source>
-		<maven.compiler.target>1.8</maven.compiler.target>
+		<maven.compiler.source>1.7</maven.compiler.source>
+		<maven.compiler.target>1.7</maven.compiler.target>
 	</properties>
 </project>
