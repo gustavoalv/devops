@@ -2,7 +2,11 @@ package co.com.extensions.dph.pichincha;
 
 import java.util.logging.Logger;
 
+import com.itko.lisa.test.TestDefException;
 import com.itko.lisa.test.TestExec;
+import com.itko.lisa.test.TestRunException;
+import com.itko.lisa.vse.ExecutionMode;
+import com.itko.lisa.vse.stateful.VSRouterStep;
 import com.itko.lisa.vse.stateful.model.Response;
 import com.itko.lisa.vse.stateful.model.TransientResponse;
 import com.itko.lisa.vse.stateful.protocol.copybook.CopybookDataProtocol;
@@ -54,4 +58,5 @@ public class XMLEmbeddedCopybookDataProtocol extends CopybookDataProtocol {
         log.info("playString = " + playString);
         response.setBody(playString);
     }
+    
 }
