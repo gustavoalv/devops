@@ -24,7 +24,7 @@ co.com.extensions.delimiter.TwoByteMessageTCPDelimiterNoInclude=Two Bytes Delimi
 #  Data Protocols #
 ###################
 #vseProtocols=co.com.extensions.dph.paxus.PaxusDataProtocol
-vseProtocols=co.com.extensions.dph.Iso8583DataProtocolHandler,co.com.extensions.dph.TwoByteMessageDataProtocolHandler,co.com.extensions.dph.PS7DataProtocol
+vseProtocols=co.com.extensions.dph.pichincha.XMLEmbeddedCopybookDataProtocol,co.com.extensions.dph.Iso8583DataProtocolHandler,co.com.extensions.dph.TwoByteMessageDataProtocolHandler,co.com.extensions.dph.PS7DataProtocol
 #com.itko.lisa.ext.iso8583.vse.dph.SVSDataProtocolHandler=data:req:resp,SVS ISO 8583 Message Converter,Convert ISO 8583 messages to and from XML
 
 
@@ -38,3 +38,4 @@ co.com.extensions.dph.Iso8583DataProtocolHandler=data:req:resp,Message Converter
 co.com.extensions.dph.TwoByteMessageDataProtocolHandler=data:req:resp,TwoByte Message Handler in TCP, Remove/Add (Request/Response)Two Byte Message Lentgh
 co.com.extensions.dph.PS7DataProtocol=data:req:resp,PS7 Data Protocol, PS7 <-> XML
 co.com.extensions.dph.paxus.PaxusDataProtocol=data:req:resp,Paxus Data Protocol, Paxus <-> XML
+co.com.extensions.dph.pichincha.XMLEmbeddedCopybookDataProtocol=data:resp,XML Embedded Copybook Data Protocol,Extracts embedded Copybook payload and converts it to XML and injects it back to SOAP/XML wrapper  
