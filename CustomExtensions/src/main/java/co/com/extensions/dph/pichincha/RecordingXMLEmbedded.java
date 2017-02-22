@@ -31,6 +31,7 @@ public class RecordingXMLEmbedded {
 		}
 	}
 	
+	
 	public String extract() {
 		try {
 			XPathFactory xpathFactory = XPathFactory.newInstance();

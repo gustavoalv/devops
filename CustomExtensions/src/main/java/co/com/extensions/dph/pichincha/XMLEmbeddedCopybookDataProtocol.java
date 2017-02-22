@@ -20,6 +20,7 @@ import com.itko.lisa.vse.stateful.protocol.copybook.CopybookDataProtocol;
 public class XMLEmbeddedCopybookDataProtocol extends CopybookDataProtocol {
     protected static Logger log   = Logger.getLogger(XMLEmbeddedCopybookDataProtocol.class.getName());
     
+    
     /**
      * Extract copybook payload during recording
      * 

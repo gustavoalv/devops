@@ -28,6 +28,7 @@ public class PlaybackXMLEmbedded {
 		}
 	}
 	
+	
 	/**
 	 * @return XML representation of copybook payload embedded in SOAP/XML
 	 */

@@ -31,6 +31,7 @@ public class Recording {
 		}
 	}
 	
+	
 	public String extract() {
 		try {
 			XPathFactory xpathFactory = XPathFactory.newInstance();

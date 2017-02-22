@@ -15,6 +15,7 @@ import com.itko.lisa.vse.stateful.protocol.ws.WSSOAPProtocolHandler;
  * @author alvgu02
  *
  */
+
 public class XMLEmbeddedWebServicesSOAP extends WSSOAPProtocolHandler {
 
 	private static Logger logger = Logger.getLogger(XMLEmbeddedWebServicesSOAP.class);
