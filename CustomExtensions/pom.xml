@@ -5,9 +5,13 @@
 
 	<groupId>com.ca.devtest.sv</groupId>
 	<artifactId>CustomExtensions</artifactId>
+	
+	
+	<packaging>jar</packaging>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>CustomExtensions</name>
 	<description>Extensiones para CA DevTest</description>
+	
 	<build>
 		<resources>
 			<resource>

@@ -119,8 +119,9 @@
 		<field name="trml_data" num="60" type="LLLVAR" />
 		<field name="acq_transport" num="61" type="LLLVAR" />
 		<field name="postal_code" num="62" type="LLLVAR" />
-        <field name="private use" num="63" type="LLLBIN" />
+        <field name="private use" num="63" type="LLLVAR" />
 		<field name="orig_data" num="90" type="ALPHA" length="42" />
+		<field name="replacement_amount" num="95" type="ALPHA" length="42" />
 		<field name="rcvng_inst_id" num="100"  type="LLVAR" />
         <field name="from_acct_id" num="102" type="LLVAR" />
         <field name="to_acct_id" num="103" type="LLVAR" />
@@ -130,8 +131,8 @@
 		<field name="receiver_info" num="121" type="LLLVAR" />
         <field name="recipient_code" num="123" type="LLLVAR" />
 		<field name="member-defined data" num="124" type="LLLVAR" />
-        <field name="Key Exchange" num="125" type="LLLBIN" />
-		<field name="Switch Private Data" num="126" type="LLLBIN" />
+        <field name="Key Exchange" num="125" type="LLLVAR" />
+		<field name="Switch Private Data" num="126" type="LLLVAR" />
         <field name="AcquirerTrace" num="127" type="LLLVAR" />
 		<field name="mac" num="128"  type="NUMERIC" length="16"  />
     </parse> 
@@ -176,15 +177,16 @@
         <field name="Currency Code Settlement" num="50" type="NUMERIC" length="3" />
         <field name="Currency Code Cardholder Billing" num="51" type="NUMERIC" length="3" />
 		<field name="addt_amt" num="54" type="LLLVAR" />
-        <field name="Additional Fees" num="55" type="LLLVAR" />
-		<field name="Numero Cheque" num="56" type="LLLVAR" />
+        <field name="Additional_Fees" num="55" type="LLLVAR" />
+		<field name="Numero_Cheque" num="56" type="LLLVAR" />
         <field name="pos_cc" num="58" type="LLLVAR" />
-		<field name="Numero Aprobacion" num="59" type="LLLVAR" />
+		<field name="Numero_Aprobacion" num="59" type="LLLVAR" />
 		<field name="trml_data" num="60" type="LLLVAR" />
 		<field name="card_issuer" num="61" type="LLLVAR" />
 		<field name="postal_code" num="62" type="LLLVAR" />
-        <field name="private use" num="63" type="LLLBIN" />
+        <field name="private use" num="63" type="LLLVAR" />
 		<field name="Message number" num="72" type="NUMERIC" length="4" />
+		<field name="replacement_amount" num="95" type="ALPHA" length="42" />
 		<field name="recv_inst_id" num="100"  type="LLVAR" />
         <field name="from_acct_id" num="102" type="LLVAR" />
         <field name="acct id2" num="103" type="LLVAR" />
@@ -198,8 +200,8 @@
 		<field name="base24-postsegmentinfromation" num="122" type="LLLVAR" />
 		<field name="recipient_code" num="123" type="LLLVAR" />
 		<field name="member-defined data" num="124" type="LLLVAR" />
-        <field name="Key Exchange" num="125" type="LLLBIN" />
-		<field name="Switch Private Data" num="126" type="LLLBIN" />
+        <field name="Key Exchange" num="125" type="LLLVAR" />
+		<field name="Switch Private Data" num="126" type="LLLVAR" />
 		<field name="mac" num="128"  type="NUMERIC" length="16"  />
     </parse>
 		<parse mti="0400" >

@@ -591,13 +591,16 @@ public class ISO8583Handler {
 		if (header != 0) {
 			myheader = hexbody.substring(0, header);
 			hexbody = hexbody.substring(header, hexbody.length());
-			System.out.println("MyHeader: " + myheader);
-			System.out.println("HexBody: " + hexbody);
+			//System.out.println("MyHeader: " + myheader);
+			//System.out.println("HexBody: " + hexbody);
+			System.out.println("Header: " + Converter.convertHexToString(myheader));
 		}
 
 		String bitmap = null;
 		msgtype = CustomExtensionsHandler.convertHexToString(hexbody.substring(
 				0, msgtypeLength));
+		
+		System.out.println("Message Type: " + msgtype);
 
 		bitmap = Converter.convertHexToString(hexbody.substring(
 				msgtypeLength, msgtypeLength + bitmapLength));
@@ -612,10 +615,12 @@ public class ISO8583Handler {
 					msgtypeLength, msgtypeLength + bitmapLength));
 		}
 
+		System.out.println("Bitmap: " + bitmap);
+		
 		hm = readBitmap(bitmap, true);
 
 		// hm = readBitmap(hexbody.substring(8, 40));
-		System.out.println("msg type is: " + msgtype);
+		
 
 		File file = new File(configfile);
 		DocumentBuilderFactory dbFactory = DocumentBuilderFactory
@@ -761,7 +766,7 @@ public class ISO8583Handler {
 					
 					if (tagtype.equals("BINARY")) {
 						
-						int fieldlength = Integer.parseInt(taglength) * 4;
+						int fieldlength = Integer.parseInt(taglength) * 2;
 //						System.out.println(myheader.substring( fieldstart, fieldstart + fieldlength));
 						tagvalue = CustomExtensionsHandler.convertHexToString(myheader.substring(fieldstart, fieldstart + fieldlength));
 						
