@@ -6,8 +6,8 @@ package com.pluralsight.service;
 import java.util.List;
 
 import com.pluralsight.model.Customer;
-import com.pluralsight.repository.CustomerRepository;
-import com.pluralsight.repository.HiberanteCustsomerRepositoryImpl;
+import com.pluralsight.persistence.CustomerPersistence;
+import com.pluralsight.persistence.HiberanteCustsomerPersistenceImpl;
 
 /**
  * @author alvgu02
@@ -15,8 +15,17 @@ import com.pluralsight.repository.HiberanteCustsomerRepositoryImpl;
  */
 public class CustomerServiceImpl implements CustomerService {
 
-	private CustomerRepository customerRepository = new HiberanteCustsomerRepositoryImpl();
+	private CustomerPersistence customerRepository;
 	
+	
+	/**
+	 * @param customerRepository
+	 */
+	public CustomerServiceImpl(CustomerPersistence customerRepository) {
+		super();
+		this.customerRepository = customerRepository;
+	}
+
 	/* (non-Javadoc)
 	 * @see com.pluralsight.service.CustomerService#findAll()
 	 */
@@ -24,4 +33,13 @@ public class CustomerServiceImpl implements CustomerService {
 		return customerRepository.findAll();
 		
 	}
+
+	/**
+	 * @param customerRepository the customerRepository to set
+	 */
+	public void setCustomerRepository(CustomerPersistence customerRepository) {
+		this.customerRepository = customerRepository;
+	}
+	
+	
 }

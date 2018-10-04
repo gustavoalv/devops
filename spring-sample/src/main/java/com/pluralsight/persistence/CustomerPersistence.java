@@ -1,10 +1,10 @@
-package com.pluralsight.repository;
+package com.pluralsight.persistence;
 
 import java.util.List;
 
 import com.pluralsight.model.Customer;
 
-public interface CustomerRepository {
+public interface CustomerPersistence {
 
 	/**
 	 * 

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.pluralsight.repository;
+package com.pluralsight.persistence;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +12,7 @@ import com.pluralsight.model.Customer;
  * @author alvgu02
  *
  */
-public class HiberanteCustsomerRepositoryImpl implements CustomerRepository {
+public class HiberanteCustsomerPersistenceImpl implements CustomerPersistence {
 
 
 	/* (non-Javadoc)
